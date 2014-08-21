@@ -50,6 +50,49 @@ public class ReadingKDMFile {
 		
 		return (Segment) resource.getContents().get(0);
 	}
+	
+	public ArrayList<Package> getAllPackages(Segment segment) {
+		
+		ArrayList<Package> allPackages = new ArrayList<Package>();
+		
+		CodeModel codeModel = (CodeModel) segment.getModel().get(0);
+
+		EList<AbstractCodeElement> elements = codeModel.getCodeElement();
+
+		for (int i = 0; i < elements.size() - 1; i++) {
+
+			System.out.println(elements.get(i));
+
+			if (elements.get(i) instanceof Package) {
+
+				Package packageKDM = (Package) elements.get(i);
+
+				Package packageSelected = this.getAllPackages(packageKDM);
+				
+				if (packageSelected != null) {
+					allPackages.add(packageSelected);
+				}								
+
+			}
+
+		}
+		
+		return allPackages;
+	}
+	
+	private Package getAllPackages(Package packageToGet) {
+		
+		Package packageSelected = null;
+				
+		EList<AbstractCodeElement> elements = packageToGet.getCodeElement();
+
+		if (elements.get(0) instanceof Package) 
+			getAllPackages( (Package) elements.get(0));
+		else 
+			return packageSelected;
+		
+		return null;
+	}
 
 	public ArrayList<ClassUnit> getAllClasses(Segment segment) {
 

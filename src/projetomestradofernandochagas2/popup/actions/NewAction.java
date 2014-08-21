@@ -40,7 +40,7 @@ public class NewAction implements IObjectActionDelegate {
 		
 		String kdmFilePath = this.file.getLocationURI().toString();
 	
-		ReadingKDMFile readingKDM = new ReadingKDMFile();
+		ReadingKDMFile readingKDM = new ReadingKDMFile();				
 		
 		Segment segment = readingKDM.load(kdmFilePath);
 		
@@ -50,6 +50,14 @@ public class NewAction implements IObjectActionDelegate {
 			System.out.println("The class is " + classUnit.getName());
 		}
 		
+		ArrayList<org.eclipse.gmt.modisco.omg.kdm.code.Package> allPackages = null;
+		
+		allPackages = readingKDM.getAllPackages(segment);
+		
+		for (org.eclipse.gmt.modisco.omg.kdm.code.Package allPackage : allPackages) {
+			System.out.println("Package name: " + allPackage.getName());
+		}
+			
 		MessageDialog.openInformation(
 			shell,
 			"ProjetoMestradoFernandoChagas2",
