@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ProjetoMestradoFernandoChagas2
+Bundle-SymbolicName: ProjetoMestradoFernandoChagas;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: projetomestradofernandochagas2.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
