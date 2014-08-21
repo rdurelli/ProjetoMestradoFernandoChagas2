@@ -6,6 +6,26 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: projetomestradofernandochagas2.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.eclipse.gmt.modisco.kdm.browser.extension;bundle-version="0.11.2",
+ org.eclipse.gmt.modisco.kdm.browser.extension.source;bundle-version="0.11.2",
+ org.eclipse.gmt.modisco.kdm.source.discoverer;bundle-version="0.11.2",
+ org.eclipse.gmt.modisco.kdm.source.discoverer.source;bundle-version="0.11.2",
+ org.eclipse.gmt.modisco.kdm.uml2converter;bundle-version="0.11.2",
+ org.eclipse.gmt.modisco.kdm.uml2converter.source;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.source.discoverer;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.source.discoverer.source;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.source.discoverer.ui;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.source.discoverer.ui.source;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.source.extension;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.source.extension.source;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.source.extension.ui;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.source.extension.ui.browser;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.source.extension.ui.browser.source;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.source.extension.ui.source;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.uml2converter;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.uml2converter.source;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.uml2converter.ui;bundle-version="0.11.2",
+ org.eclipse.modisco.kdm.uml2converter.ui.source;bundle-version="0.11.2"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
