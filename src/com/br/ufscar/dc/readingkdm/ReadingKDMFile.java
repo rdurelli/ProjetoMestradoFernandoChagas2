@@ -46,6 +46,8 @@ public class ReadingKDMFile {
 
 		System.out.println("O Contents Ž " + resource.getContents());
 
+		System.out.println(((Segment) resource.getContents().get(0)).getModel().size());
+		
 		return (Segment) resource.getContents().get(0);
 	}
 
