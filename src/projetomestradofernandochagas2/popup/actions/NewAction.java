@@ -2,10 +2,15 @@ package projetomestradofernandochagas2.popup.actions;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.gmt.modisco.omg.kdm.action.ActionRelationship;
+import org.eclipse.gmt.modisco.omg.kdm.action.BlockUnit;
+import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
+import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
@@ -60,6 +65,46 @@ public class NewAction implements IObjectActionDelegate {
 		
 		
 		readingKDM.mappingPackageToLayer(allPackages, segment, kdmFilePath);
+		
+		ArrayList<MethodUnit> allMethods = new ArrayList<MethodUnit>(); 
+		
+		for (ClassUnit classUnit1: allClasses) {			
+			ArrayList<MethodUnit> methodUnits = readingKDM.getMethods(classUnit1);
+			allMethods.addAll(methodUnits);
+			//for (MethodUnit methodUnit : methodUnits) {
+			//	System.out.println(methodUnit.getName());
+			//}
+		}
+		
+		//Get All BlockUnits
+		
+		ArrayList<BlockUnit> allBlockUnits = new ArrayList<BlockUnit>(); 
+		
+		for (MethodUnit methodUnit1: allMethods) {
+			if (readingKDM.getBlockUnit(methodUnit1) != null)
+				allBlockUnits.add(readingKDM.getBlockUnit(methodUnit1));		
+		}
+		
+		System.out.println(allBlockUnits.size());
+		
+		for (BlockUnit blockUnit : allBlockUnits) {
+			System.out.println(((MethodUnit)(blockUnit.eContainer())).getName());
+		}
+		
+		//Get All Actions
+		
+		ArrayList<Calls> allRelationsShip = new ArrayList<Calls>();
+		
+		for (BlockUnit blockUnit : allBlockUnits) {
+			allRelationsShip.addAll(readingKDM.getRelations(blockUnit));
+		}
+
+		for (Calls calls : allRelationsShip) {
+			System.out.println("To " + calls.getTo().getName());
+			System.out.println("From " + calls.getFrom().getName()+"\n");
+		}
+		
+		System.out.println(allRelationsShip.size());
 			
 		MessageDialog.openInformation(
 			shell,

@@ -15,6 +15,8 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.gmt.modisco.omg.kdm.action.AbstractActionRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.action.ActionElement;
 import org.eclipse.gmt.modisco.omg.kdm.action.ActionRelationship;
+import org.eclipse.gmt.modisco.omg.kdm.action.BlockUnit;
+import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
 import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeElement;
 import org.eclipse.gmt.modisco.omg.kdm.code.CallableUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
@@ -202,11 +204,11 @@ public class ReadingKDMFile {
 
 	}
 
-	public List<MethodUnit> getMethods(ClassUnit classUnit) {
+	public ArrayList<MethodUnit> getMethods(ClassUnit classUnit) {
 
 		EList<CodeItem> allElementsOfTheClass = classUnit.getCodeElement();
 
-		List<MethodUnit> methodUnit = new ArrayList<MethodUnit>();
+		ArrayList<MethodUnit> methodUnit = new ArrayList<MethodUnit>();
 
 		for (CodeItem codeItem : allElementsOfTheClass) {
 
@@ -224,25 +226,64 @@ public class ReadingKDMFile {
 
 	}
 	
-	public List<ActionElement> getActionsElements(MethodUnit methodUnit) {
+	public BlockUnit getBlockUnit(MethodUnit methodUnit) {
 
-		EList<AbstractCodeElement> allElementsOfTheMethod = methodUnit.getCodeElement();			
+		EList<AbstractCodeElement> allElementsOfTheMethod = methodUnit.getCodeElement();
 
-		List<ActionElement> actionElements = new ArrayList<ActionElement>();
+		
+		if ( (allElementsOfTheMethod.size() == 2 ) && ( allElementsOfTheMethod.get(1) instanceof BlockUnit) )
+			return (BlockUnit) allElementsOfTheMethod.get(1);
+		else return null;
+
+	}		
+	
+	public List<Calls> getRelations(BlockUnit blockUnit) {
+		
+		ArrayList<Calls> relations = new ArrayList<Calls>();			
+
+		EList<AbstractCodeElement> allElementsOfTheMethod = blockUnit.getCodeElement();			
 
 		for (AbstractCodeElement codeItem : allElementsOfTheMethod) {
 
-			if (codeItem instanceof ActionElement && ((ActionElement) codeItem).getKind().endsWith("method invocation")) {
+			if (codeItem instanceof ActionElement) {
 
-				ActionElement actionElementToPutIntoTheList = (ActionElement) codeItem;
-
-				actionElements.add(actionElementToPutIntoTheList);
-
+				relations = getActionsRelationships((ActionElement)codeItem, relations);
 			}
 
 		}
 
-		return actionElements;
+		return relations;
+
+	}
+	
+	private ArrayList<Calls> getActionsRelationships(ActionElement actionElement, ArrayList<Calls> relations) {
+
+		EList<AbstractCodeElement> allElements = actionElement.getCodeElement();			
+
+		for (AbstractCodeElement codeItem : allElements) {
+
+			if (codeItem instanceof ActionElement) {
+
+				relations = getActionsRelationships((ActionElement) codeItem, relations);
+				
+				if (((ActionElement)codeItem).getActionRelation() != null) {
+					
+					ActionElement element = ((ActionElement)codeItem);
+					
+					EList<AbstractActionRelationship> allRelationhips = element.getActionRelation();
+					
+					for (AbstractActionRelationship abstractActionRelationship : allRelationhips) {
+											
+						if (abstractActionRelationship instanceof Calls)
+							relations.add((Calls)abstractActionRelationship);
+						
+					}
+								
+			}
+			}
+		}
+
+		return relations;
 
 	}
 	
