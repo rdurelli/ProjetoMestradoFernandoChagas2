@@ -1,6 +1,8 @@
 package com.br.ufscar.dc.readingkdm;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +25,11 @@ import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmPackage;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
+import org.eclipse.gmt.modisco.omg.kdm.structure.Layer;
+import org.eclipse.gmt.modisco.omg.kdm.structure.StructureFactory;
+import org.eclipse.gmt.modisco.omg.kdm.structure.StructureModel;
+
+
 
 public class ReadingKDMFile {	
 
@@ -49,6 +56,60 @@ public class ReadingKDMFile {
 		System.out.println(((Segment) resource.getContents().get(0)).getModel().size());
 		
 		return (Segment) resource.getContents().get(0);
+	}
+	
+	
+	
+	public void mappingPackageToLayer (ArrayList<Package> allPackages, Segment segment, String kdmPath) {
+		
+		StructureModel structureModel =  StructureFactory.eINSTANCE.createStructureModel();//create a StructureModel
+		
+		segment.getModel().add(structureModel);// add the StructureMOdel...
+		
+		Layer layer = null;
+		
+		for (Package package1 : allPackages) {
+		
+			layer = StructureFactory.eINSTANCE.createLayer();
+			
+			layer.setName(package1.getName());
+			layer.getImplementation().add(package1);
+			structureModel.getStructureElement().add(layer);
+			
+		}
+		
+		save(segment, kdmPath);
+		
+		
+	}
+	
+	
+//	this method is used to save the KDMModel 
+	public void save(Segment model, String KDMPath)  {
+
+
+		KdmPackage.eINSTANCE.eClass();
+
+		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+		Map<String, Object> m = reg.getExtensionToFactoryMap();
+		m.put("website", new XMIResourceFactoryImpl());
+
+		// Obtain a new resource set
+		ResourceSet resSet = new ResourceSetImpl();
+
+		
+		Resource resource = resSet.createResource(URI.createURI(KDMPath));
+
+		resource.getContents().add(model);
+
+		try {
+
+			resource.save(Collections.EMPTY_MAP);
+
+		} catch (IOException e) {
+
+		}
+
 	}
 	
 	public ArrayList<Package> getAllPackages(Segment segment) {

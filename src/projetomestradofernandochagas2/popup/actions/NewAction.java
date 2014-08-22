@@ -57,6 +57,9 @@ public class NewAction implements IObjectActionDelegate {
 		for (org.eclipse.gmt.modisco.omg.kdm.code.Package allPackage : allPackages) {
 			System.out.println("Package name: " + allPackage.getName());
 		}
+		
+		
+		readingKDM.mappingPackageToLayer(allPackages, segment, kdmFilePath);
 			
 		MessageDialog.openInformation(
 			shell,
