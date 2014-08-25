@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -25,6 +26,7 @@ import org.eclipse.gmt.modisco.omg.kdm.code.CodeModel;
 import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
+import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmPackage;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
 import org.eclipse.gmt.modisco.omg.kdm.structure.Layer;
@@ -285,6 +287,37 @@ public class ReadingKDMFile {
 
 		return relations;
 
+	}
+	
+	
+	public Package[] topOfTree (Calls callToMap) {
+		
+		Package[] packageToAndFrom = new Package[2];
+		Package to = null;
+		Package from = null;
+		
+		to = getToOrFrom(callToMap.getTo(), to);
+		from = getToOrFrom(callToMap.getFrom(),from);
+		packageToAndFrom[0] = to;
+		packageToAndFrom[1] = from;
+		
+		return packageToAndFrom;
+		
+	}
+	
+	private Package getToOrFrom (EObject element, Package toOrFrom) {
+		
+		if (element instanceof Package) {
+			
+			return (Package) element;
+		} else
+		{
+			toOrFrom = getToOrFrom(element.eContainer(),toOrFrom);
+			
+		}
+		
+		return toOrFrom;
+		
 	}
 	
 	public List<ActionRelationship> getRelationships(ActionElement actionElement) {

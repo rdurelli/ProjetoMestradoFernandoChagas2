@@ -11,6 +11,7 @@ import org.eclipse.gmt.modisco.omg.kdm.action.BlockUnit;
 import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
+import org.eclipse.gmt.modisco.omg.kdm.code.Package;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
@@ -105,7 +106,20 @@ public class NewAction implements IObjectActionDelegate {
 		}
 		
 		System.out.println(allRelationsShip.size());
+		
+		
+		for (Calls calls : allRelationsShip) {
+		
+			Package[] allPackagesOfCall = readingKDM.topOfTree(calls);
 			
+			System.out.println("To " + calls.getTo().getName());
+			System.out.println("Its package is "+ allPackagesOfCall[0].getName());
+			System.out.println("From " + calls.getFrom().getName()+"\n");
+			System.out.println("Its package is "+ allPackagesOfCall[1].getName());
+		}
+		
+		
+		
 		MessageDialog.openInformation(
 			shell,
 			"ProjetoMestradoFernandoChagas2",
