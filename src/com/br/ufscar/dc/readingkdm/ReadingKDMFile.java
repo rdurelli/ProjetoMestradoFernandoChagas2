@@ -27,8 +27,10 @@ import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
+import org.eclipse.gmt.modisco.omg.kdm.kdm.KDMModel;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmPackage;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
+import org.eclipse.gmt.modisco.omg.kdm.structure.AbstractStructureElement;
 import org.eclipse.gmt.modisco.omg.kdm.structure.Layer;
 import org.eclipse.gmt.modisco.omg.kdm.structure.StructureFactory;
 import org.eclipse.gmt.modisco.omg.kdm.structure.StructureModel;
@@ -290,6 +292,100 @@ public class ReadingKDMFile {
 	}
 	
 	
+	
+	public ArrayList<Layer> getAllLayers (Segment segment) {
+		
+		ArrayList<Layer> allLayers = new ArrayList<Layer>();
+		StructureModel structureModel = null;
+		EList<KDMModel> models = segment.getModel();
+		
+		for (KDMModel kdmModel : models) {
+			
+			if (kdmModel instanceof StructureModel) {
+				
+				structureModel = (StructureModel) kdmModel;
+				EList<AbstractStructureElement> allStructureElement = structureModel.getStructureElement();
+				
+				for (AbstractStructureElement abstractStructureElement : allStructureElement) {
+					if (abstractStructureElement instanceof Layer) {
+						
+						allLayers.add((Layer)abstractStructureElement);
+						
+						
+					}
+				}
+				
+			}
+		}
+		return allLayers;
+		
+	}
+	
+	public void createAggreatedRelationShips (ArrayList<Layer> layers, Segment segment, StructureModel structureModel, ArrayList<Calls> allCalls) {
+		
+		for (Calls calls : allCalls) {
+			
+			Package[] packageToAndFrom = topOfTree(calls);
+			
+			
+			for (Layer layers1 : layers) {
+				
+//				EList<KDMEntity> layers1.getImplementation();
+				
+			}
+			
+		}
+		
+	}
+	
+	public Boolean mappingLayerToPackage (Layer layer, Package packageToVerify) {
+		
+		String pathToVerifyPackage = getPathOfPackage(packageToVerify, ""); 
+		
+		EList<KDMEntity> allImplementation = layer.getImplementation();
+		
+		for (KDMEntity kdmEntity : allImplementation) {
+			
+			String pathToVerifyLayer = "";
+			
+			if (kdmEntity instanceof Package) {
+				
+				pathToVerifyLayer = getPathOfPackage((Package)kdmEntity, pathToVerifyLayer);
+				
+			}
+			
+			if (pathToVerifyLayer.equals(pathToVerifyPackage)) {
+				
+				return true;
+				
+			}else
+				return false;
+			
+		}
+		
+		return null;
+	}
+	
+	
+	public String getPathOfPackage (Package packageToGetThePath, String pathToGet) {
+		
+	
+		if (packageToGetThePath instanceof Package) {
+			if (packageToGetThePath.eContainer() instanceof CodeModel) {
+				pathToGet += packageToGetThePath.getName();
+			}
+			else {
+			
+				pathToGet += packageToGetThePath.getName()+".";
+				
+			}
+			pathToGet  = getPathOfPackage(packageToGetThePath, pathToGet);
+			
+		}
+		return pathToGet;
+		
+	}
+	
 	public Package[] topOfTree (Calls callToMap) {
 		
 		Package[] packageToAndFrom = new Package[2];
@@ -319,6 +415,9 @@ public class ReadingKDMFile {
 		return toOrFrom;
 		
 	}
+	
+	
+	
 	
 	public List<ActionRelationship> getRelationships(ActionElement actionElement) {
 
