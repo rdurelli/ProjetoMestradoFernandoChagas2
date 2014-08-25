@@ -43,6 +43,8 @@ import org.omg.IOP.CodecFactory;
 
 public class ReadingKDMFile {
 
+	private Segment segmentMain = null;
+	
 	public Segment load(String KDMModelFullPath) {
 
 		KdmPackage.eINSTANCE.eClass();
@@ -287,8 +289,15 @@ public class ReadingKDMFile {
 
 					for (AbstractActionRelationship abstractActionRelationship : allRelationhips) {
 
-						if (abstractActionRelationship instanceof Calls)
-							relations.add((Calls) abstractActionRelationship);
+						if (abstractActionRelationship instanceof Calls) {
+							
+							ArrayList<Layer> allLayers = getAllLayers(this.segmentMain);
+							
+							if (verifyIfCallContainsLayer((Calls) abstractActionRelationship, allLayers)) {
+								relations.add((Calls) abstractActionRelationship);
+							}
+							
+						}
 
 					}
 
@@ -298,6 +307,27 @@ public class ReadingKDMFile {
 
 		return relations;
 
+	}
+	
+	private boolean verifyIfCallContainsLayer (Calls callToVerify, ArrayList<Layer> allLayers) {
+		
+		Package[] packageToAndFrom = topOfTree(callToVerify);
+		boolean to = false, from = false;
+		
+		
+		for (Layer layer1 : allLayers) {
+						
+			if (mappingLayerToPackage(layer1, packageToAndFrom[0]))
+				to = true;
+			
+			if (mappingLayerToPackage(layer1, packageToAndFrom[1]))
+				from = true;									 					
+			
+		}
+		
+		if (to && from)
+			return true;
+		return false;
 	}
 
 	public ArrayList<Layer> getAllLayers(Segment segment) {
@@ -565,5 +595,13 @@ public class ReadingKDMFile {
 
 		return callableUnits;
 	}
+
+	public Segment getSegmentMain() {
+		return segmentMain;
+	}
+
+	public void setSegmentMain(Segment segmentMain) {
+		this.segmentMain = segmentMain;
+	}	
 
 }

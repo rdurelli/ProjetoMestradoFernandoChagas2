@@ -51,6 +51,8 @@ public class NewAction implements IObjectActionDelegate {
 		
 		Segment segment = readingKDM.load(kdmFilePath);
 		
+		readingKDM.setSegmentMain(segment);
+		
 		ArrayList<ClassUnit> allClasses = readingKDM.getAllClasses(segment);
 		
 		for (ClassUnit classUnit : allClasses) {
