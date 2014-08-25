@@ -13,6 +13,7 @@ import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
+import org.eclipse.gmt.modisco.omg.kdm.structure.Layer;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -118,7 +119,16 @@ public class NewAction implements IObjectActionDelegate {
 			System.out.println("Its package is "+ allPackagesOfCall[1].getName());
 		}
 		
+		ArrayList<Layer> allLayers = readingKDM.getAllLayers(segment);
 		
+		for (Layer layer : allLayers) {			
+			
+			System.out.println(layer.getName());
+		}
+		
+		readingKDM.createAggreatedRelationShips(allLayers, allRelationsShip);
+		
+		readingKDM.save(segment, kdmFilePath);
 		
 		MessageDialog.openInformation(
 			shell,
