@@ -113,7 +113,7 @@ public class NewAction implements IObjectActionDelegate {
 		
 		for (Calls calls : allRelationsShip) {
 		
-			Package[] allPackagesOfCall = readingKDM.topOfTree(calls);
+			Package[] allPackagesOfCall = readingKDM.getOriginAndDestinyOfaCall(calls);
 			
 			System.out.println("To " + calls.getTo().getName());
 			System.out.println("Its package is "+ allPackagesOfCall[0].getName());

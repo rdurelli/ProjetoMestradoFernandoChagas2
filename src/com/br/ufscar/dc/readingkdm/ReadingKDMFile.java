@@ -41,13 +41,28 @@ import org.eclipse.gmt.modisco.omg.kdm.structure.StructureFactory;
 import org.eclipse.gmt.modisco.omg.kdm.structure.StructureModel;
 import org.omg.IOP.CodecFactory;
 
+
+
+/** 
+* @author Fernando Chagas e Rafael Durelli
+* @since 21/08/14 
+*/
+
 public class ReadingKDMFile {
 
 	private Segment segmentMain = null;
 	
+	
+	/** 
+	 * Retorna um segmento passando como parametro o caminho completo de um arquivo KDM.
+	 * 
+	 * @param  KDMModelFullPath  representa o caminho da arquivo KDM
+	 * @return      O Segment, que é o elemento principal para manipular uma instância do KDM.
+	 * @see         org.eclipse.gmt.modisco.omg.kdm.kdm.Segment
+	 */
 	public Segment load(String KDMModelFullPath) {
 
-		KdmPackage.eINSTANCE.eClass();
+		KdmPackage.eINSTANCE.eClass();//get the KDMPackage instance
 
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 		Map<String, Object> m = reg.getExtensionToFactoryMap();
@@ -59,25 +74,23 @@ public class ReadingKDMFile {
 		Resource resource = resSet.getResource(URI.createURI(KDMModelFullPath),
 				true);
 
-		// Get the first model element and cast it to the right type, in my
-		// example everything is hierarchical included in this first node
-		System.out.println(resource.getContents().get(0).toString());
-
-		System.out.println("O Contents é " + resource.getContents());
-
-		System.out.println(((Segment) resource.getContents().get(0)).getModel()
-				.size());
-
-		return (Segment) resource.getContents().get(0);
+		return (Segment) resource.getContents().get(0); //pega o primeiro elemento, que é o Segment
 	}
 
+	/** 
+	 * Esse método é responsável por instancia o StructureModel para atribuir os elementos arquiteturais.
+	 * 
+	 * @param  allPackages  representa todos os pacotes que a instancia do KDM contêm.
+	 * @param segment, representa uma instância do KDM
+	 * @param kdmPath representa o caminho do arquivo KDM
+	 */
 	public void mappingPackageToLayer(ArrayList<Package> allPackages,
 			Segment segment, String kdmPath) {
 
 		StructureModel structureModel = StructureFactory.eINSTANCE
 				.createStructureModel();// create a StructureModel
 
-		segment.getModel().add(structureModel);// add the StructureMOdel...
+		segment.getModel().add(structureModel);// add the StructureModel into the Segment
 
 		Layer layer = null;
 
@@ -95,8 +108,12 @@ public class ReadingKDMFile {
 
 	}
 
-	// this method is used to save the KDMModel
-	public void save(Segment model, String KDMPath) {
+	/** 
+	 * Esse método é responsável por salvar uma instância do KDM após a realização de mudanças no mesmo.
+	 * @param segment, representa uma instância do KDM
+	 * @param kdmPath representa o caminho do arquivo KDM
+	 */
+	public void save(Segment segment, String KDMPath) {
 
 		KdmPackage.eINSTANCE.eClass();
 
@@ -109,7 +126,7 @@ public class ReadingKDMFile {
 
 		Resource resource = resSet.createResource(URI.createURI(KDMPath));
 
-		resource.getContents().add(model);
+		resource.getContents().add(segment);
 
 		try {
 
@@ -121,6 +138,12 @@ public class ReadingKDMFile {
 
 	}
 
+	
+	/** 
+	 * Esse método é responsável por obter todos os pacotes da instância do KDM
+	 * @param segment, representa uma instância do KDM
+	 * @return ArrayList<Package> todos os pacotes do sistema.
+	 */
 	public ArrayList<Package> getAllPackages(Segment segment) {
 
 		ArrayList<Package> allPackages = new ArrayList<Package>();
@@ -147,6 +170,12 @@ public class ReadingKDMFile {
 		return allPackages;
 	}
 
+	/** 
+	 * Esse método é responsável por obter todos os pacotes da instância do KDM
+	 * @param packageToGet, o pacote para obter
+	 * @param packages A lista com todos os pacotes.
+	 * @return ArrayList<Package> todos os pacotes do sistema.
+	 */
 	private List<Package> getAllPackages(Package packageToGet,
 			List<Package> packages) {
 
@@ -165,6 +194,12 @@ public class ReadingKDMFile {
 		return packages;
 	}
 
+	
+	/** 
+	 * Esse método é responsável por obter todas as classes da instância do KDM
+	 * @param segment, o segment que representa a instância do modelo
+	 * @return ArrayList<ClassUnit> todas as Classes do sistema.
+	 */
 	public ArrayList<ClassUnit> getAllClasses(Segment segment) {
 
 		ArrayList<ClassUnit> allClasses = new ArrayList<ClassUnit>();
@@ -191,6 +226,10 @@ public class ReadingKDMFile {
 
 	}
 
+	/** 
+	 * Esse método é responsável por obter todas as classes da instância do KDM
+	 * @param elements, representa todos os elementos
+	 */
 	private void getClasses(EList<AbstractCodeElement> elements,
 			ArrayList<ClassUnit> allClasses) {
 
@@ -212,6 +251,12 @@ public class ReadingKDMFile {
 
 	}
 
+	
+	/** 
+	 * Esse método é responsável por obter todos os métodos dado uma ClassUnit
+	 * @param classUnit, que representa uma instância de uma classe do KDM
+	 * @return ArrayList<MethodUnit> todas as Classes do sistema.
+	 */
 	public ArrayList<MethodUnit> getMethods(ClassUnit classUnit) {
 
 		EList<CodeItem> allElementsOfTheClass = classUnit.getCodeElement();
@@ -234,6 +279,12 @@ public class ReadingKDMFile {
 
 	}
 
+	
+	/** 
+	 * Esse método é responsável por obter um BlockUnit dado um MethodUnit
+	 * @param methodUnit representa uma instância de um Método do KDM
+	 * @return BlockUnit retorna o blockUnit
+	 */
 	public BlockUnit getBlockUnit(MethodUnit methodUnit) {
 
 		EList<AbstractCodeElement> allElementsOfTheMethod = methodUnit
@@ -247,6 +298,12 @@ public class ReadingKDMFile {
 
 	}
 
+	
+	/** 
+	 * Esse método é responsável por obter todos os Calls dado um BlockUnit
+	 * @param blockUnit representa uma instância de um BlockUnit do KDM
+	 * @return List<Calls>
+	 */
 	public List<Calls> getRelations(BlockUnit blockUnit) {
 
 		ArrayList<Calls> relations = new ArrayList<Calls>();
@@ -268,6 +325,13 @@ public class ReadingKDMFile {
 
 	}
 
+	
+	/** 
+	 * Esse método é responsável por obter todos os Calls dado um BlockUnit
+	 * @param actionElement representa uma instância do ActionElement
+	 * @param relations representa as relações
+	 * @return List<Calls>
+	 */
 	private ArrayList<Calls> getActionsRelationships(
 			ActionElement actionElement, ArrayList<Calls> relations) {
 
@@ -309,9 +373,16 @@ public class ReadingKDMFile {
 
 	}
 	
+	
+	/** 
+	 * Esse método é responsável por verificar se uma instância da metaclasse Calls contêm uma relaçõa com um determinado Layer.
+	 * @param callToVerify representa uma instância da metaclasse Calls
+	 * @param allLayers representa uma instância de uma ArrayLista que contêm todos os layer do sistema
+	 * @return boolean
+	 */
 	private boolean verifyIfCallContainsLayer (Calls callToVerify, ArrayList<Layer> allLayers) {
 		
-		Package[] packageToAndFrom = topOfTree(callToVerify);
+		Package[] packageToAndFrom = getOriginAndDestinyOfaCall(callToVerify);
 		boolean to = false, from = false;
 		
 		
@@ -330,6 +401,12 @@ public class ReadingKDMFile {
 		return false;
 	}
 
+	
+	/** 
+	 * Esse método é responsável por obter todos os Layers que já foram mapeados no sistema
+	 * @param segment representa um segment
+	 * @return ArrayList<Layer> 
+	 */
 	public ArrayList<Layer> getAllLayers(Segment segment) {
 
 		ArrayList<Layer> allLayers = new ArrayList<Layer>();
@@ -358,12 +435,18 @@ public class ReadingKDMFile {
 
 	}
 
+	
+	/** 
+	 * Esse método é responsável por criar relacionamentos entre elementos arquiteturais. 
+	 * @param layers representa o conjunto de elementos arquiteturais.
+	 * @param allCalls representa todas as ações a serem mapeadas na arquitetura. 
+	 */
 	public void createAggreatedRelationShips(ArrayList<Layer> layers,
 			ArrayList<Calls> allCalls) {
 
 		for (Calls calls : allCalls) {
 
-			Package[] packageToAndFrom = topOfTree(calls);
+			Package[] packageToAndFrom = getOriginAndDestinyOfaCall(calls);
 
 			for (Layer layers1 : layers) {
 
@@ -390,7 +473,7 @@ public class ReadingKDMFile {
 								AggregatedRelationship newRelationship = CoreFactory.eINSTANCE.createAggregatedRelationship();
 								newRelationship.setDensity(1);
 								newRelationship.setFrom(layers1);
-								newRelationship.setTo(getLayerOfPackage(packageToAndFrom[0], layers));
+								newRelationship.setTo(verifyLayerOwnerOfPackage(packageToAndFrom[0], layers));
 								newRelationship.getRelation().add(calls);
 								layers1.getAggregated().add(newRelationship);
 								break;
@@ -404,7 +487,7 @@ public class ReadingKDMFile {
 						AggregatedRelationship newRelationship = CoreFactory.eINSTANCE.createAggregatedRelationship();
 						newRelationship.setDensity(1);
 						newRelationship.setFrom(layers1);
-						newRelationship.setTo(getLayerOfPackage(packageToAndFrom[0], layers));
+						newRelationship.setTo(verifyLayerOwnerOfPackage(packageToAndFrom[0], layers));
 						newRelationship.getRelation().add(calls);
 						layers1.getAggregated().add(newRelationship);
 					}
@@ -419,7 +502,14 @@ public class ReadingKDMFile {
 
 	}
 
-	public Layer getLayerOfPackage(Package packageToGet, ArrayList<Layer> layers) {
+	
+	/** 
+	 * Esse método é responsável por verificar em qual Layer encontra-se um determinado Package 
+	 * @param packageToGet representa o Package para verificar
+	 * @param layers representa todos os elementos arquiteturais do KDM.
+	 * @return Layer representa o Layer. 
+	 */
+	public Layer verifyLayerOwnerOfPackage(Package packageToGet, ArrayList<Layer> layers) {
 
 		String pathToVerifyPackage = getPathOfPackage(packageToGet, "");
 
@@ -450,6 +540,13 @@ public class ReadingKDMFile {
 
 	}
 
+	
+	/** 
+	 * Esse método é responsável por verificar se uma Package é representado por uma Layer 
+	 * @param packageToVerify representa o Package para verificar
+	 * @param layer representa todos os elementos arquiteturais do KDM.
+	 * @return Boolean 
+	 */
 	public Boolean mappingLayerToPackage(Layer layer, Package packageToVerify) {
 
 		String pathToVerifyPackage = getPathOfPackage(packageToVerify, "");
@@ -479,6 +576,13 @@ public class ReadingKDMFile {
 		return null;
 	}
 
+	
+	/** 
+	 * Esse método é responsável por obter o caminho completo dado uma instância de Package 
+	 * @param packageToGetThePath representa uma instância do Package para obter o caminho
+	 * @param pathToGet representa uma String no qual será add o caminho.
+	 * @return String
+	 */
 	public String getPathOfPackage(EObject packageToGetThePath, String pathToGet) {
 
 		if (packageToGetThePath instanceof Package) {
@@ -501,7 +605,14 @@ public class ReadingKDMFile {
 
 	}
 
-	public Package[] topOfTree(Calls callToMap) {
+	
+	/** 
+	 * Esse método é responsável por recuperar a origem e o destino de uma determinada ação. Além disso, a representação
+	 * é dada em Package. Exemplo: pacote de origen da ação, pacote de destino da ação. 
+	 * @param callToMap representa uma instância do Calls
+	 * @return Package[], o primeiro elemento é o TO (destino), e o segundo é o FROM (origem)
+	 */
+	public Package[] getOriginAndDestinyOfaCall(Calls callToMap) {
 
 		Package[] packageToAndFrom = new Package[2];
 		Package to = null;
@@ -516,6 +627,13 @@ public class ReadingKDMFile {
 
 	}
 
+	/** 
+	 * Esse método é responsável por recuperar a origem e o destino de uma determinada ação. Além disso, a representação
+	 * é dada em Package. Exemplo: pacote de origen da ação, pacote de destino da ação. 
+	 * @param element representa um ControlElement
+	 * @param toOrFrom representa o Package
+	 * @return Package
+	 */
 	private Package getToOrFrom(EObject element, Package toOrFrom) {
 
 		if (element instanceof Package) {
@@ -530,6 +648,14 @@ public class ReadingKDMFile {
 
 	}
 
+	
+	/** 
+	 * Esse método é responsável por recuperar a origem e o destino de uma determinada ação. Além disso, a representação
+	 * é dada em Package. Exemplo: pacote de origen da ação, pacote de destino da ação. 
+	 * @param element representa um ControlElement
+	 * @param toOrFrom representa o Package
+	 * @return Package
+	 */
 	public List<ActionRelationship> getRelationships(ActionElement actionElement) {
 
 		EList<AbstractActionRelationship> allElementsOfTheMethod = actionElement
