@@ -10,6 +10,7 @@ import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
+import org.eclipse.gmt.modisco.omg.kdm.core.KDMRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
 import org.eclipse.gmt.modisco.omg.kdm.structure.Layer;
 import org.eclipse.jface.action.IAction;
@@ -70,14 +71,16 @@ public class NewAction implements IObjectActionDelegate {
 		
 		ArrayList<MethodUnit> allMethods = new ArrayList<MethodUnit>(); 
 		
+		ArrayList<KDMRelationship> allRelationships = new ArrayList<KDMRelationship>();
+		
 		for (ClassUnit classUnit1: allClasses) {			
 			ArrayList<MethodUnit> methodUnits = readingKDM.getMethods(classUnit1);
-			allMethods.addAll(methodUnits);
+			allMethods.addAll(methodUnits);			
 			//for (MethodUnit methodUnit : methodUnits) {
 			//	System.out.println(methodUnit.getName());
 			//}
 		}
-		
+
 		//Get All BlockUnits
 		
 		ArrayList<BlockUnit> allBlockUnits = new ArrayList<BlockUnit>(); 
@@ -95,23 +98,23 @@ public class NewAction implements IObjectActionDelegate {
 		
 		//Get All Actions
 		
-		ArrayList<Calls> allRelationsShip = new ArrayList<Calls>();
+		ArrayList<Calls> allCalls = new ArrayList<Calls>();
 		
 		for (BlockUnit blockUnit : allBlockUnits) {
-			allRelationsShip.addAll(readingKDM.getRelations(blockUnit));
+			allCalls.addAll(readingKDM.getRelations(blockUnit));
 		}
 
-		for (Calls calls : allRelationsShip) {
+		for (Calls calls : allCalls) {
 			System.out.println("To " + calls.getTo().getName());
 			System.out.println("From " + calls.getFrom().getName()+"\n");
 		}
 		
-		System.out.println(allRelationsShip.size());
+		System.out.println(allCalls.size());
 		
 		
-		for (Calls calls : allRelationsShip) {
+		for (Calls calls : allCalls) {
 		
-			Package[] allPackagesOfCall = readingKDM.getOriginAndDestinyOfaCall(calls);
+			Package[] allPackagesOfCall = readingKDM.getOriginAndDestiny(calls.getTo(), calls.getFrom());
 			
 			System.out.println("To " + calls.getTo().getName());
 			System.out.println("Its package is "+ allPackagesOfCall[0].getName());
@@ -126,7 +129,15 @@ public class NewAction implements IObjectActionDelegate {
 			System.out.println(layer.getName());
 		}
 		
-		readingKDM.createAggreatedRelationShips(allLayers, allRelationsShip);
+		for (ClassUnit class1 : allClasses) {
+			allRelationships.addAll(readingKDM.addImportsImplementsAndExtends(class1, allLayers));
+		}
+		
+		readingKDM.createAggreatedRelationShips(allLayers, allCalls);
+		
+		//readingKDM.save(segment, kdmFilePath);
+		
+		readingKDM.createAggreatedRelationShips(allLayers, allRelationships);
 		
 		readingKDM.save(segment, kdmFilePath);
 		

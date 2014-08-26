@@ -19,16 +19,21 @@ import org.eclipse.gmt.modisco.omg.kdm.action.ActionRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.action.BlockUnit;
 import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
 import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeElement;
+import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.code.CallableUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeItem;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeModel;
+import org.eclipse.gmt.modisco.omg.kdm.code.Extends;
+import org.eclipse.gmt.modisco.omg.kdm.code.Implements;
+import org.eclipse.gmt.modisco.omg.kdm.code.Imports;
 import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
 import org.eclipse.gmt.modisco.omg.kdm.core.AggregatedRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.core.CoreFactory;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
+import org.eclipse.gmt.modisco.omg.kdm.core.KDMRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KDMModel;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmPackage;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
@@ -245,6 +250,34 @@ public class ReadingKDMFile {
 		}
 
 	}
+	
+	/** 
+	 * Esse metodo e responsavel por obter todos os imports, implements e extends contidos em uma ClassUnit
+	 * @param classUnit, que representa uma instancia de uma classe do KDM
+	 */
+	public ArrayList<KDMRelationship> addImportsImplementsAndExtends(ClassUnit classUnit, ArrayList<Layer> allLayers) {
+
+		EList<AbstractCodeRelationship> allRelationshipsOfTheClass = classUnit.getCodeRelation();
+
+		ArrayList<KDMRelationship> allRelationships = new ArrayList<KDMRelationship>();
+
+		for (AbstractCodeRelationship relationship : allRelationshipsOfTheClass) {
+
+			if (verifyIfCallContainsLayer2( relationship, allLayers)) {
+				allRelationships.add(relationship);
+			}
+			
+
+		}
+		
+		for (KDMRelationship kdmRelationship : allRelationships) {
+			System.out.println("Eu sou TO" + kdmRelationship.getTo().getName());
+			System.out.println("Eu sou FROM" + kdmRelationship.getFrom().getName());
+		}
+
+		return allRelationships;
+
+	}
 
 	
 	/** 
@@ -377,7 +410,7 @@ public class ReadingKDMFile {
 	 */
 	private boolean verifyIfCallContainsLayer (Calls callToVerify, ArrayList<Layer> allLayers) {
 		
-		Package[] packageToAndFrom = getOriginAndDestinyOfaCall(callToVerify);
+		Package[] packageToAndFrom = getOriginAndDestiny(callToVerify.getTo(),callToVerify.getFrom());
 		boolean to = false, from = false;
 		
 		
@@ -395,6 +428,34 @@ public class ReadingKDMFile {
 			return true;
 		return false;
 	}
+	
+	/** 
+	 * Esse metodo e responsavel por verificar se uma instancia da metaclasse Calls contem uma relacao com um determinado Layer.
+	 * @param relationToVerify representa uma instancia da metaclasse Calls
+	 * @param allLayers representa uma instancia de uma ArrayLista que contem todos os layer do sistema
+	 * @return boolean
+	 */
+	private boolean verifyIfCallContainsLayer2 (KDMRelationship relationToVerify, ArrayList<Layer> allLayers) {
+		
+		Package[] packageToAndFrom = getOriginAndDestiny(relationToVerify.getTo(),relationToVerify.getFrom());
+		boolean to = false, from = false;
+		
+		
+		for (Layer layer1 : allLayers) {
+						
+			if (mappingLayerToPackage(layer1, packageToAndFrom[0]))
+				to = true;
+			
+			if (mappingLayerToPackage(layer1, packageToAndFrom[1]))
+				from = true;									 					
+			
+		}
+		
+		if (to && from)
+			return true;
+		return false;
+	}
+
 
 	
 	/** 
@@ -429,19 +490,46 @@ public class ReadingKDMFile {
 		return allLayers;
 
 	}
-
 	
 	/** 
 	 * Esse metodo e responsavel por criar relacionamentos entre elementos arquiteturais. 
 	 * @param layers representa o conjunto de elementos arquiteturais.
-	 * @param allCalls representa todas as acoes a serem mapeadas na arquitetura. 
+	 * @param allRelations representa todas as acoes a serem mapeadas na arquitetura. 
 	 */
 	public void createAggreatedRelationShips(ArrayList<Layer> layers,
-			ArrayList<Calls> allCalls) {
+			ArrayList<? extends KDMRelationship> allRelations) {
 
-		for (Calls calls : allCalls) {
+		for (KDMRelationship relation : allRelations) {
 
-			Package[] packageToAndFrom = getOriginAndDestinyOfaCall(calls);
+			Package[] packageToAndFrom = null;
+			
+			EObject to = relation.getTo();
+			EObject from = relation.getFrom();
+			
+			/*
+			
+			if (relation instanceof Calls) {
+				to = ((Calls) relation).getTo();
+				from = ((Calls) relation).getFrom();
+			
+			} else if (relation instanceof Extends) {
+				to = ((Extends) relation).getTo();
+				from = ((Extends) relation).getFrom();
+				
+			} else if (relation instanceof Implements) {
+				
+				to = ((Implements) relation).getTo();
+				from = ((Implements) relation).getFrom();
+			
+				
+			} else if (relation instanceof Imports) {
+				
+				to = ((Imports) relation).getTo();
+				from = ((Imports) relation).getFrom();
+			}
+			*/
+			
+			packageToAndFrom = getOriginAndDestiny(to, from);
 
 			for (Layer layers1 : layers) {
 
@@ -461,7 +549,7 @@ public class ReadingKDMFile {
 							//da chamada ja esta cadastrado em algum dos relacionamentos
 							if (mappingLayerToPackage((Layer) aggregatedRelationship.get(i).getTo(), packageToAndFrom[0])) {
 								aggregatedRelationship.get(i).setDensity(aggregatedRelationship.get(i).getDensity() + 1);
-								aggregatedRelationship.get(i).getRelation().add(calls);
+								aggregatedRelationship.get(i).getRelation().add(relation);
 								break;
 
 							} else if ((aggregatedRelationship.size()-1) == i) {
@@ -469,7 +557,7 @@ public class ReadingKDMFile {
 								newRelationship.setDensity(1);
 								newRelationship.setFrom(layers1);
 								newRelationship.setTo(verifyLayerOwnerOfPackage(packageToAndFrom[0], layers));
-								newRelationship.getRelation().add(calls);
+								newRelationship.getRelation().add(relation);
 								layers1.getAggregated().add(newRelationship);
 								break;
 							}
@@ -483,13 +571,15 @@ public class ReadingKDMFile {
 						newRelationship.setDensity(1);
 						newRelationship.setFrom(layers1);
 						newRelationship.setTo(verifyLayerOwnerOfPackage(packageToAndFrom[0], layers));
-						newRelationship.getRelation().add(calls);
+						newRelationship.getRelation().add(relation);
 						layers1.getAggregated().add(newRelationship);
 					}
 					
 					break;
 
 				}
+				
+				//save(segmentMain, "C:/Users/Fernando/Documents/runtime-EclipseApplication/TesteModisco/Examples/MVCBasic_kdm.xmi");
 
 			}
 
@@ -599,7 +689,6 @@ public class ReadingKDMFile {
 		return pathToGet;
 
 	}
-
 	
 	/** 
 	 * Esse metodo e responsavel por recuperar a origem e o destino de uma determinada acao. Alem disso, a representacao
@@ -607,18 +696,19 @@ public class ReadingKDMFile {
 	 * @param callToMap representa uma instancia do Calls
 	 * @return Package[], o primeiro elemento e o TO (destino), e o segundo e o FROM (origem)
 	 */
-	public Package[] getOriginAndDestinyOfaCall(Calls callToMap) {
+	public Package[] getOriginAndDestiny(EObject to, EObject from) {
 
 		Package[] packageToAndFrom = new Package[2];
-		Package to = null;
-		Package from = null;
+		Package auxTo = null;
+		Package auxFrom = null;
 
-		to = getToOrFrom(callToMap.getTo(), to);
-		from = getToOrFrom(callToMap.getFrom(), from);
-		packageToAndFrom[0] = to;
-		packageToAndFrom[1] = from;
+		auxTo = getToOrFrom(to, auxTo);
+		auxFrom = getToOrFrom(from, auxFrom);
+		packageToAndFrom[0] = auxTo;
+		packageToAndFrom[1] = auxFrom;
 
 		return packageToAndFrom;
+
 
 	}
 
