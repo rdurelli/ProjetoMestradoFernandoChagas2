@@ -8,19 +8,21 @@
             objectClass="org.eclipse.core.resources.IFile"
             id="ProjetoMestradoFernandoChagas2.contribution1">
          <menu
+               icon="icons/ArchKDM-LOGO.png"
+               id="ProjetoMestradoFernandoChagas2.menu1"
                label="ArchKDM"
-               path="additions"
-               id="ProjetoMestradoFernandoChagas2.menu1">
+               path="additions">
             <separator
                   name="group1">
             </separator>
          </menu>
          <action
-               label="Recovery ArchitectureView"
                class="projetomestradofernandochagas2.popup.actions.NewAction"
-               menubarPath="ProjetoMestradoFernandoChagas2.menu1/group1"
                enablesFor="1"
-               id="ProjetoMestradoFernandoChagas2.newAction">
+               icon="icons/recovery.png"
+               id="ProjetoMestradoFernandoChagas2.newAction"
+               label="Recovery ArchitectureView"
+               menubarPath="ProjetoMestradoFernandoChagas2.menu1/group1">
          </action>
       </objectContribution>
    </extension>
