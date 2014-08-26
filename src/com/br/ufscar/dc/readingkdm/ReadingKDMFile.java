@@ -30,6 +30,7 @@ import org.eclipse.gmt.modisco.omg.kdm.code.Imports;
 import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
+import org.eclipse.gmt.modisco.omg.kdm.code.StorableUnit;
 import org.eclipse.gmt.modisco.omg.kdm.core.AggregatedRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.core.CoreFactory;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
@@ -52,6 +53,23 @@ public class ReadingKDMFile {
 
 	private Segment segmentMain = null;
 	
+	private ArrayList<ClassUnit> allClassUnits = new ArrayList<ClassUnit>();
+	
+	private ArrayList<MethodUnit> allMethodUnits = new ArrayList<MethodUnit>();
+	
+	private ArrayList<InterfaceUnit> allInterfaceUnit = new ArrayList<InterfaceUnit>();
+	
+	private ArrayList<StorableUnit> allStorableUnits = new ArrayList<StorableUnit>();
+	
+	private ArrayList<Package> allPackages = new ArrayList<Package>();
+	
+	private ArrayList<BlockUnit> allBlockUnits = new ArrayList<BlockUnit>();
+	
+	private ArrayList<Calls> allCalls = new ArrayList<Calls>();
+	
+	private ArrayList<Layer> allLayers = new ArrayList<Layer>();
+	
+	private ArrayList<KDMRelationship> allRelationships = new ArrayList<KDMRelationship>();
 	
 	/** 
 	 * Retorna um segmento passando como parametro o caminho completo de um arquivo KDM.
@@ -824,6 +842,78 @@ public class ReadingKDMFile {
 
 	public void setSegmentMain(Segment segmentMain) {
 		this.segmentMain = segmentMain;
-	}	
+	}
 
+	public ArrayList<ClassUnit> getAllClassUnits() {
+		return allClassUnits;
+	}
+
+	public void setAllClassUnits(ArrayList<ClassUnit> allClassUnits) {
+		this.allClassUnits = allClassUnits;
+	}
+
+	public ArrayList<MethodUnit> getAllMethodUnits() {
+		return allMethodUnits;
+	}
+
+	public void setAllMethodUnits(ArrayList<MethodUnit> allMethodUnits) {
+		this.allMethodUnits = allMethodUnits;
+	}
+
+	public ArrayList<InterfaceUnit> getAllInterfaceUnit() {
+		return allInterfaceUnit;
+	}
+
+	public void setAllInterfaceUnit(ArrayList<InterfaceUnit> allInterfaceUnit) {
+		this.allInterfaceUnit = allInterfaceUnit;
+	}
+
+	public ArrayList<StorableUnit> getAllStorableUnits() {
+		return allStorableUnits;
+	}
+
+	public void setAllStorableUnits(ArrayList<StorableUnit> allStorableUnits) {
+		this.allStorableUnits = allStorableUnits;
+	}
+
+	public ArrayList<Package> getAllPackages() {
+		return allPackages;
+	}
+
+	public void setAllPackages(ArrayList<Package> allPackages) {
+		this.allPackages = allPackages;
+	}
+
+	public ArrayList<BlockUnit> getAllBlockUnits() {
+		return allBlockUnits;
+	}
+
+	public void setAllBlockUnits(ArrayList<BlockUnit> allBlockUnits) {
+		this.allBlockUnits = allBlockUnits;
+	}
+
+	public ArrayList<Calls> getAllCalls() {
+		return allCalls;
+	}
+
+	public void setAllCalls(ArrayList<Calls> allCalls) {
+		this.allCalls = allCalls;
+	}
+
+	public ArrayList<Layer> getAllLayers() {
+		return allLayers;
+	}
+
+	public void setAllLayers(ArrayList<Layer> allLayers) {
+		this.allLayers = allLayers;
+	}
+
+	public ArrayList<KDMRelationship> getAllRelationships() {
+		return allRelationships;
+	}
+
+	public void setAllRelationships(ArrayList<KDMRelationship> allRelationships) {
+		this.allRelationships = allRelationships;
+	}	
+	
 }

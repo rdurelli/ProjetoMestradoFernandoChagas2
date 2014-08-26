@@ -39,6 +39,51 @@ public class NewAction implements IObjectActionDelegate {
 		super();
 	}
 
+	private void executeArchitetureMapping (String kdmFilePath, Segment segment) {
+		
+		kdmFilePath = this.file.getLocationURI().toString();
+		
+		ReadingKDMFile readingKDM = new ReadingKDMFile();				
+		
+		segment = readingKDM.load(kdmFilePath);
+		
+		readingKDM.setSegmentMain(segment);
+		
+		readingKDM.setAllClassUnits(readingKDM.getAllClasses(segment));
+		
+		readingKDM.setAllPackages(readingKDM.getAllPackages(segment));
+		
+		readingKDM.mappingPackageToLayer(readingKDM.getAllPackages(), segment, kdmFilePath);
+		
+		for (ClassUnit classUnit1: readingKDM.getAllClasses(segment)) {			
+			ArrayList<MethodUnit> methodUnits = readingKDM.getMethods(classUnit1);
+			readingKDM.getAllMethodUnits().addAll(methodUnits);
+		}
+		
+		for (MethodUnit methodUnit1: readingKDM.getAllMethodUnits()) {
+			if (readingKDM.getBlockUnit(methodUnit1) != null)
+				readingKDM.getAllBlockUnits().add(readingKDM.getBlockUnit(methodUnit1));		
+		}
+		
+		for (BlockUnit blockUnit : readingKDM.getAllBlockUnits()) {
+			readingKDM.getAllCalls().addAll(readingKDM.getRelations(blockUnit));
+		}
+		
+		readingKDM.setAllLayers(readingKDM.getAllLayers(segment));
+		
+		for (ClassUnit class1 : readingKDM.getAllClassUnits()) {
+			readingKDM.getAllRelationships().addAll(readingKDM.addImportsImplementsAndExtends(class1, readingKDM.getAllLayers()));
+		}
+		
+		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllCalls());
+		
+		
+		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllRelationships());
+		
+		readingKDM.save(segment, kdmFilePath);
+		
+	}
+	
 	/**
 	 * @see IActionDelegate#run(IAction)
 	 */
@@ -52,94 +97,7 @@ public class NewAction implements IObjectActionDelegate {
 		
 		readingKDM.setSegmentMain(segment);
 		
-		ArrayList<ClassUnit> allClasses = readingKDM.getAllClasses(segment);
-		
-		for (ClassUnit classUnit : allClasses) {
-			System.out.println("The class is " + classUnit.getName());
-		}
-		
-		ArrayList<org.eclipse.gmt.modisco.omg.kdm.code.Package> allPackages = null;
-		
-		allPackages = readingKDM.getAllPackages(segment);
-		
-		for (org.eclipse.gmt.modisco.omg.kdm.code.Package allPackage : allPackages) {
-			System.out.println("Package name: " + allPackage.getName());
-		}
-		
-		
-		readingKDM.mappingPackageToLayer(allPackages, segment, kdmFilePath);
-		
-		ArrayList<MethodUnit> allMethods = new ArrayList<MethodUnit>(); 
-		
-		ArrayList<KDMRelationship> allRelationships = new ArrayList<KDMRelationship>();
-		
-		for (ClassUnit classUnit1: allClasses) {			
-			ArrayList<MethodUnit> methodUnits = readingKDM.getMethods(classUnit1);
-			allMethods.addAll(methodUnits);			
-			//for (MethodUnit methodUnit : methodUnits) {
-			//	System.out.println(methodUnit.getName());
-			//}
-		}
-
-		//Get All BlockUnits
-		
-		ArrayList<BlockUnit> allBlockUnits = new ArrayList<BlockUnit>(); 
-		
-		for (MethodUnit methodUnit1: allMethods) {
-			if (readingKDM.getBlockUnit(methodUnit1) != null)
-				allBlockUnits.add(readingKDM.getBlockUnit(methodUnit1));		
-		}
-		
-		System.out.println(allBlockUnits.size());
-		
-		for (BlockUnit blockUnit : allBlockUnits) {
-			System.out.println(((MethodUnit)(blockUnit.eContainer())).getName());
-		}
-		
-		//Get All Actions
-		
-		ArrayList<Calls> allCalls = new ArrayList<Calls>();
-		
-		for (BlockUnit blockUnit : allBlockUnits) {
-			allCalls.addAll(readingKDM.getRelations(blockUnit));
-		}
-
-		for (Calls calls : allCalls) {
-			System.out.println("To " + calls.getTo().getName());
-			System.out.println("From " + calls.getFrom().getName()+"\n");
-		}
-		
-		System.out.println(allCalls.size());
-		
-		
-		for (Calls calls : allCalls) {
-		
-			Package[] allPackagesOfCall = readingKDM.getOriginAndDestiny(calls.getTo(), calls.getFrom());
-			
-			System.out.println("To " + calls.getTo().getName());
-			System.out.println("Its package is "+ allPackagesOfCall[0].getName());
-			System.out.println("From " + calls.getFrom().getName()+"\n");
-			System.out.println("Its package is "+ allPackagesOfCall[1].getName());
-		}
-		
-		ArrayList<Layer> allLayers = readingKDM.getAllLayers(segment);
-		
-		for (Layer layer : allLayers) {			
-			
-			System.out.println(layer.getName());
-		}
-		
-		for (ClassUnit class1 : allClasses) {
-			allRelationships.addAll(readingKDM.addImportsImplementsAndExtends(class1, allLayers));
-		}
-		
-		readingKDM.createAggreatedRelationShips(allLayers, allCalls);
-		
-		//readingKDM.save(segment, kdmFilePath);
-		
-		readingKDM.createAggreatedRelationShips(allLayers, allRelationships);
-		
-		readingKDM.save(segment, kdmFilePath);
+		this.executeArchitetureMapping(kdmFilePath, segment);
 		
 		MessageDialog.openInformation(
 			shell,
