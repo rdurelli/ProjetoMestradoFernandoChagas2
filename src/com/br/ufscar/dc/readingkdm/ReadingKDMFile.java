@@ -21,7 +21,6 @@ import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
 import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeElement;
 import org.eclipse.gmt.modisco.omg.kdm.code.CallableUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
-import org.eclipse.gmt.modisco.omg.kdm.code.CodeFactory;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeItem;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeModel;
 import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
@@ -29,18 +28,14 @@ import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
 import org.eclipse.gmt.modisco.omg.kdm.core.AggregatedRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.core.CoreFactory;
-import org.eclipse.gmt.modisco.omg.kdm.core.CorePackage;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KDMModel;
-import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmFactory;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmPackage;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
 import org.eclipse.gmt.modisco.omg.kdm.structure.AbstractStructureElement;
 import org.eclipse.gmt.modisco.omg.kdm.structure.Layer;
 import org.eclipse.gmt.modisco.omg.kdm.structure.StructureFactory;
 import org.eclipse.gmt.modisco.omg.kdm.structure.StructureModel;
-import org.omg.IOP.CodecFactory;
-
 
 
 /** 
@@ -74,7 +69,7 @@ public class ReadingKDMFile {
 		Resource resource = resSet.getResource(URI.createURI(KDMModelFullPath),
 				true);
 
-		return (Segment) resource.getContents().get(0); //pega o primeiro elemento, que é o Segment
+		return (Segment) resource.getContents().get(0); //pega o primeiro elemento, que e o Segment
 	}
 
 	/** 
@@ -94,7 +89,7 @@ public class ReadingKDMFile {
 
 		Layer layer = null;
 
-		for (Package package1 : allPackages) {
+		for (Package package1 : allPackages) {						
 
 			layer = StructureFactory.eINSTANCE.createLayer();
 
@@ -109,7 +104,7 @@ public class ReadingKDMFile {
 	}
 
 	/** 
-	 * Esse metodo e responsavel por salvar uma instancia do KDM apos a realização de mudancas no mesmo.
+	 * Esse metodo e responsavel por salvar uma instancia do KDM apos a realizacao de mudancas no mesmo.
 	 * @param segment, representa uma instancia do KDM
 	 * @param kdmPath representa o caminho do arquivo KDM
 	 */
@@ -580,7 +575,7 @@ public class ReadingKDMFile {
 	/** 
 	 * Esse metodo e responsavel por obter o caminho completo dado uma instancia de Package 
 	 * @param packageToGetThePath representa uma instancia do Package para obter o caminho
-	 * @param pathToGet representa uma String no qual será add o caminho.
+	 * @param pathToGet representa uma String no qual sera add o caminho.
 	 * @return String
 	 */
 	public String getPathOfPackage(EObject packageToGetThePath, String pathToGet) {
