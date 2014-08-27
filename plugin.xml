@@ -17,7 +17,7 @@
             </separator>
          </menu>
          <action
-               class="projetomestradofernandochagas2.popup.actions.NewAction"
+               class="projetomestradofernandochagas2.popup.actions.ActionRecoveryArchitecture"
                enablesFor="1"
                icon="icons/recovery.png"
                id="ProjetoMestradoFernandoChagas2.newAction"

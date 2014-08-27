@@ -26,7 +26,7 @@ import com.br.ufscar.dc.readingkdm.ReadingKDMFile;
 
 //import com.br.actions.IActionDelegate;
 
-public class NewAction implements IObjectActionDelegate {
+public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 
 	private Shell shell;
 
@@ -35,7 +35,7 @@ public class NewAction implements IObjectActionDelegate {
 	/**
 	 * Constructor for Action1.
 	 */
-	public NewAction() {
+	public ActionRecoveryArchitecture() {
 		super();
 	}
 
