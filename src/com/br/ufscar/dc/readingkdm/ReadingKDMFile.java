@@ -15,13 +15,16 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.gmt.modisco.omg.kdm.action.AbstractActionRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.action.ActionElement;
+import org.eclipse.gmt.modisco.omg.kdm.action.ActionFactory;
 import org.eclipse.gmt.modisco.omg.kdm.action.ActionRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.action.BlockUnit;
 import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
+import org.eclipse.gmt.modisco.omg.kdm.action.ExceptionFlow;
 import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeElement;
 import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.code.CallableUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
+import org.eclipse.gmt.modisco.omg.kdm.code.CodeFactory;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeItem;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeModel;
 import org.eclipse.gmt.modisco.omg.kdm.code.Extends;
@@ -35,7 +38,9 @@ import org.eclipse.gmt.modisco.omg.kdm.core.AggregatedRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.core.CoreFactory;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMRelationship;
+import org.eclipse.gmt.modisco.omg.kdm.kdm.Annotation;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KDMModel;
+import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmFactory;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmPackage;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
 import org.eclipse.gmt.modisco.omg.kdm.structure.AbstractStructureElement;
@@ -287,11 +292,7 @@ public class ReadingKDMFile {
 			
 
 		}
-		
-		for (KDMRelationship kdmRelationship : allRelationships) {
-			System.out.println("Eu sou TO" + kdmRelationship.getTo().getName());
-			System.out.println("Eu sou FROM" + kdmRelationship.getFrom().getName());
-		}
+
 
 		return allRelationships;
 
@@ -550,7 +551,7 @@ public class ReadingKDMFile {
 			packageToAndFrom = getOriginAndDestiny(to, from);
 
 			for (Layer layers1 : layers) {
-
+				
 				//Itera nas layers ate encontrar a layer que corresponde a origem(from) da chamada(call) 
 				if (mappingLayerToPackage(layers1, packageToAndFrom[1])) {
 

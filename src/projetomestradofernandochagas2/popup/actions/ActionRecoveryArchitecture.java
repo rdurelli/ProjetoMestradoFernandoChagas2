@@ -24,7 +24,6 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import com.br.ufscar.dc.readingkdm.ReadingKDMFile;
 
-//import com.br.actions.IActionDelegate;
 
 public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 
@@ -33,7 +32,7 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 	private IFile file;
 	
 	/**
-	 * Constructor for Action1.
+	 * Constructor for ActionRecoveryArchitecture.
 	 */
 	public ActionRecoveryArchitecture() {
 		super();
@@ -90,13 +89,9 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 	public void run(IAction action) {
 		
 		String kdmFilePath = this.file.getLocationURI().toString();
-	
 		ReadingKDMFile readingKDM = new ReadingKDMFile();				
-		
 		Segment segment = readingKDM.load(kdmFilePath);
-		
 		readingKDM.setSegmentMain(segment);
-		
 		this.executeArchitetureMapping(kdmFilePath, segment);
 		
 		MessageDialog.openInformation(
