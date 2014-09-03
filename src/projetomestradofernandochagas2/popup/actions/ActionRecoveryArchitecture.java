@@ -10,6 +10,7 @@ import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
+import org.eclipse.gmt.modisco.omg.kdm.code.StorableUnit;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
 import org.eclipse.gmt.modisco.omg.kdm.structure.Layer;
@@ -40,6 +41,9 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 
 	private void executeArchitetureMapping (String kdmFilePath, Segment segment) {
 		
+		
+		ArrayList<StorableUnit> allStorableUnit = new ArrayList<StorableUnit>();
+		
 		kdmFilePath = this.file.getLocationURI().toString();
 		
 		ReadingKDMFile readingKDM = new ReadingKDMFile();				
@@ -57,6 +61,8 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		for (ClassUnit classUnit1: readingKDM.getAllClasses(segment)) {			
 			ArrayList<MethodUnit> methodUnits = readingKDM.getMethods(classUnit1);
 			readingKDM.getAllMethodUnits().addAll(methodUnits);
+			
+			allStorableUnit.addAll(readingKDM.fetchAllStorableUnit(classUnit1));
 		}
 		
 		for (MethodUnit methodUnit1: readingKDM.getAllMethodUnits()) {
@@ -79,7 +85,11 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllRelationships());
 		
-		readingKDM.save(segment, kdmFilePath);
+		readingKDM.addHasTypeToSegment(allStorableUnit);
+		
+		System.out.println(kdmFilePath);
+		
+//		readingKDM.save(segment, kdmFilePath);
 		
 	}
 	
@@ -93,6 +103,8 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		Segment segment = readingKDM.load(kdmFilePath);
 		readingKDM.setSegmentMain(segment);
 		this.executeArchitetureMapping(kdmFilePath, segment);
+		
+
 		
 		MessageDialog.openInformation(
 			shell,

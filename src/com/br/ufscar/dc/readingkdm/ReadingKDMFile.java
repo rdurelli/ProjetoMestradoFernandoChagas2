@@ -27,7 +27,9 @@ import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeFactory;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeItem;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeModel;
+import org.eclipse.gmt.modisco.omg.kdm.code.Datatype;
 import org.eclipse.gmt.modisco.omg.kdm.code.Extends;
+import org.eclipse.gmt.modisco.omg.kdm.code.HasType;
 import org.eclipse.gmt.modisco.omg.kdm.code.Implements;
 import org.eclipse.gmt.modisco.omg.kdm.code.Imports;
 import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
@@ -99,6 +101,72 @@ public class ReadingKDMFile {
 
 		return (Segment) resource.getContents().get(0); //pega o primeiro elemento, que e o Segment
 	}
+	
+	
+	
+	public ArrayList<StorableUnit> fetchAllStorableUnit (ClassUnit classUnitToGetTheStorableUnits) {
+		
+		ArrayList<StorableUnit> allStorableUnits = new ArrayList<StorableUnit>();
+		
+		EList<CodeItem> allElements = classUnitToGetTheStorableUnits.getCodeElement();
+		
+		for (CodeItem codeItem : allElements) {
+			
+			if (codeItem instanceof StorableUnit) {
+				
+				StorableUnit storableUnitToFetch = (StorableUnit) codeItem;
+				allStorableUnits.add(storableUnitToFetch);
+			}
+			
+		}
+		
+		return allStorableUnits;
+		
+	}
+	
+	public void addHasTypeToSegment (ArrayList<StorableUnit> allStorableUnitOfAClass) {
+		
+		for (StorableUnit storableUnit : allStorableUnitOfAClass) {
+			
+			HasType hasType = CodeFactory.eINSTANCE.createHasType();
+			
+			hasType.setFrom((ClassUnit)storableUnit.eContainer());
+			
+			Datatype dataType = storableUnit.getType();
+			
+			hasType.setTo(dataType);
+			
+			storableUnit.getCodeRelation().add(hasType);
+
+		}
+		
+		this.save(segmentMain, "file:/Users/rafaeldurelli/Documents/runtime-EclipseApplication/ProjetoFernandoChagas/example/newKDM.xmi");
+		
+		
+	}
+	
+	
+	public void teste () {
+		
+		
+		HasType hasType = CodeFactory.eINSTANCE.createHasType();
+		
+		StorableUnit attribute = CodeFactory.eINSTANCE.createStorableUnit();
+		
+		ClassUnit classUnit = CodeFactory.eINSTANCE.createClassUnit();
+		
+		hasType.setFrom(attribute);
+		hasType.setTo(classUnit);
+		
+		AggregatedRelationship aggregated = CoreFactory.eINSTANCE.createAggregatedRelationship();
+		
+		
+		aggregated.getRelation().add(hasType);
+		
+		
+		
+	}
+	
 
 	/** 
 	 * Esse metodo e responsavel por instancia o StructureModel para atribuir os elementos arquiteturais.
@@ -127,7 +195,7 @@ public class ReadingKDMFile {
 
 		}
 
-		save(segment, kdmPath);
+//		save(segment, kdmPath);
 
 	}
 
