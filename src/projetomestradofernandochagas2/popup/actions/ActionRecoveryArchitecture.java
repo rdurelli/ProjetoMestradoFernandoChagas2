@@ -46,6 +46,8 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		kdmFilePath = this.file.getLocationURI().toString();
 		
+		kdmFilePath = this.file.getProject().getLocation().toString();
+		
 		ReadingKDMFile readingKDM = new ReadingKDMFile();				
 		
 		segment = readingKDM.load(kdmFilePath);
@@ -89,7 +91,7 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		System.out.println(kdmFilePath);
 		
-//		readingKDM.save(segment, kdmFilePath);
+		readingKDM.save(segment, kdmFilePath+"/newKDM.xmi");
 		
 	}
 	
