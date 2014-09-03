@@ -67,6 +67,12 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 			allStorableUnit.addAll(readingKDM.fetchAllStorableUnit(classUnit1));
 		}
 		
+		for (StorableUnit storableUnit : allStorableUnit) {
+			
+			readingKDM.getAllHasType().addAll(readingKDM.fetchAllHasType(storableUnit));
+			
+		}			
+		
 		for (MethodUnit methodUnit1: readingKDM.getAllMethodUnits()) {
 			if (readingKDM.getBlockUnit(methodUnit1) != null)
 				readingKDM.getAllBlockUnits().add(readingKDM.getBlockUnit(methodUnit1));		
@@ -80,10 +86,11 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		for (ClassUnit class1 : readingKDM.getAllClassUnits()) {
 			readingKDM.getAllRelationships().addAll(readingKDM.addImportsImplementsAndExtends(class1, readingKDM.getAllLayers()));
-		}
+		}				
 		
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllCalls());
 		
+		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllHasType());
 		
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllRelationships());
 		

@@ -71,6 +71,8 @@ public class ReadingKDMFile {
 	
 	private ArrayList<KDMRelationship> allRelationships = new ArrayList<KDMRelationship>();
 	
+	private ArrayList<HasType> allHasType = new ArrayList<HasType>();
+	
 	/** 
 	 * Retorna um segmento passando como parametro o caminho completo de um arquivo KDM.
 	 * 
@@ -117,7 +119,7 @@ public class ReadingKDMFile {
 		
 	}
 	
-	public ArrayList<HasType> getAllHasType (StorableUnit storableUnitToGetTheHasType) {
+	public ArrayList<HasType> fetchAllHasType (StorableUnit storableUnitToGetTheHasType) {
 		
 		ArrayList<HasType> allHasType = new ArrayList<HasType>();
 		
@@ -135,7 +137,7 @@ public class ReadingKDMFile {
 			
 		}
 		
-		return null;
+		return allHasType;
 		
 	}
 	
@@ -380,7 +382,8 @@ public class ReadingKDMFile {
 		return allRelationships;
 
 	}
-
+	
+	
 	
 	/** 
 	 * Esse metodo e responsavel por obter todos os metodos dado uma ClassUnit
@@ -998,6 +1001,14 @@ public class ReadingKDMFile {
 
 	public void setAllRelationships(ArrayList<KDMRelationship> allRelationships) {
 		this.allRelationships = allRelationships;
-	}	
+	}
+
+	public ArrayList<HasType> getAllHasType() {
+		return allHasType;
+	}
+	
+	public void setAllHasType(ArrayList<HasType> allHasType) {
+		this.allHasType = allHasType;
+	}
 	
 }
