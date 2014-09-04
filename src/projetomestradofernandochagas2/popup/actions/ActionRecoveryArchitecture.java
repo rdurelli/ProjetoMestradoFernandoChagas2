@@ -41,12 +41,13 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 
 	private void executeArchitetureMapping (String kdmFilePath, Segment segment) {
 		
+		String kdmProjectPath = "";
 		
 		ArrayList<StorableUnit> allStorableUnit = new ArrayList<StorableUnit>();
 		
 		kdmFilePath = this.file.getLocationURI().toString();
 		
-		kdmFilePath = this.file.getProject().getLocation().toString();
+		kdmProjectPath = this.file.getProject().getLocation().toString();
 		
 		ReadingKDMFile readingKDM = new ReadingKDMFile();				
 		
@@ -66,6 +67,8 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 			
 			allStorableUnit.addAll(readingKDM.fetchAllStorableUnit(classUnit1));
 		}
+		
+		readingKDM.addHasTypeToSegment(allStorableUnit);
 		
 		for (StorableUnit storableUnit : allStorableUnit) {
 			
@@ -92,13 +95,11 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllHasType());
 		
-		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllRelationships());
+		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllRelationships());		
 		
-		readingKDM.addHasTypeToSegment(allStorableUnit);
+		System.out.println("ProjectPath: " + kdmProjectPath);
 		
-		System.out.println(kdmFilePath);
-		
-		readingKDM.save(segment, kdmFilePath+"/newKDM.xmi");
+		readingKDM.save(segment, "file:"+kdmProjectPath+"/Examples/newKDM.xmi");
 		
 	}
 	

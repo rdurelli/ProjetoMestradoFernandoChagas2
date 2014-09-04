@@ -31,6 +31,7 @@ import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
 import org.eclipse.gmt.modisco.omg.kdm.code.StorableUnit;
+import org.eclipse.gmt.modisco.omg.kdm.code.TemplateType;
 import org.eclipse.gmt.modisco.omg.kdm.core.AggregatedRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.core.CoreFactory;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
@@ -81,6 +82,8 @@ public class ReadingKDMFile {
 	 * @see         org.eclipse.gmt.modisco.omg.kdm.kdm.Segment
 	 */
 	public Segment load(String KDMModelFullPath) {
+		
+		System.err.println(KDMModelFullPath);
 
 		KdmPackage.eINSTANCE.eClass();//get the KDMPackage instance
 
@@ -121,23 +124,23 @@ public class ReadingKDMFile {
 	
 	public ArrayList<HasType> fetchAllHasType (StorableUnit storableUnitToGetTheHasType) {
 		
-		ArrayList<HasType> allHasType = new ArrayList<HasType>();
-		
+		ArrayList<HasType> auxAllHasType = new ArrayList<HasType>();
+						
 		EList<AbstractCodeRelationship> allRelations = storableUnitToGetTheHasType.getCodeRelation();
 		
 		for (AbstractCodeRelationship abstractCodeRelationship : allRelations) {
 			
 			if (abstractCodeRelationship instanceof HasType) {
 								
-				if (verifyIfCallContainsLayer2(abstractCodeRelationship, this.allLayers)) {				
-					allHasType.add((HasType)abstractCodeRelationship);
+				if (verifyIfRelationContaisLayer(abstractCodeRelationship, this.allLayers)) {				
+					auxAllHasType.add((HasType)abstractCodeRelationship);
 				}
 				
 			}
 			
 		}
 		
-		return allHasType;
+		return auxAllHasType;
 		
 	}
 	
@@ -153,7 +156,7 @@ public class ReadingKDMFile {
 			
 			hasType.setTo(dataType);
 			
-			storableUnit.getCodeRelation().add(hasType);
+			storableUnit.getCodeRelation().add(hasType);					
 
 		}
 		
@@ -209,7 +212,7 @@ public class ReadingKDMFile {
 			layer.setName(package1.getName());
 			layer.getImplementation().add(package1);
 			structureModel.getStructureElement().add(layer);
-
+			this.allLayers.add(layer);
 		}
 
 //		save(segment, kdmPath);
@@ -371,7 +374,7 @@ public class ReadingKDMFile {
 
 		for (AbstractCodeRelationship relationship : allRelationshipsOfTheClass) {
 
-			if (verifyIfCallContainsLayer2( relationship, allLayers)) {
+			if (verifyIfRelationContaisLayer( relationship, allLayers)) {
 				allRelationships.add(relationship);
 			}
 			
@@ -490,7 +493,7 @@ public class ReadingKDMFile {
 							
 							ArrayList<Layer> allLayers = getAllLayers(this.segmentMain);
 							
-							if (verifyIfCallContainsLayer((Calls) abstractActionRelationship, allLayers)) {
+							if (verifyIfRelationContaisLayer(abstractActionRelationship, allLayers)) {
 								relations.add((Calls) abstractActionRelationship);
 							}
 							
@@ -506,41 +509,13 @@ public class ReadingKDMFile {
 
 	}
 	
-	
 	/** 
-	 * Esse metodo e responsavel por verificar se uma instancia da metaclasse Calls contem uma relacao com um determinado Layer.
-	 * @param callToVerify representa uma instancia da metaclasse Calls
+	 * Esse metodo e responsavel por verificar se uma instancia da metaclasse KDMRelationship contem uma relacao com um determinado Layer.
+	 * @param relationToVerify representa uma instancia da metaclasse KDMRelationship
 	 * @param allLayers representa uma instancia de uma ArrayLista que contem todos os layer do sistema
 	 * @return boolean
 	 */
-	private boolean verifyIfCallContainsLayer (Calls callToVerify, ArrayList<Layer> allLayers) {
-		
-		Package[] packageToAndFrom = getOriginAndDestiny(callToVerify.getTo(),callToVerify.getFrom());
-		boolean to = false, from = false;
-		
-		
-		for (Layer layer1 : allLayers) {
-						
-			if (mappingLayerToPackage(layer1, packageToAndFrom[0]))
-				to = true;
-			
-			if (mappingLayerToPackage(layer1, packageToAndFrom[1]))
-				from = true;									 					
-			
-		}
-		
-		if (to && from)
-			return true;
-		return false;
-	}
-	
-	/** 
-	 * Esse metodo e responsavel por verificar se uma instancia da metaclasse Calls contem uma relacao com um determinado Layer.
-	 * @param relationToVerify representa uma instancia da metaclasse Calls
-	 * @param allLayers representa uma instancia de uma ArrayLista que contem todos os layer do sistema
-	 * @return boolean
-	 */
-	private boolean verifyIfCallContainsLayer2 (KDMRelationship relationToVerify, ArrayList<Layer> allLayers) {
+	private boolean verifyIfRelationContaisLayer (KDMRelationship relationToVerify, ArrayList<Layer> allLayers) {
 		
 		Package[] packageToAndFrom = getOriginAndDestiny(relationToVerify.getTo(),relationToVerify.getFrom());
 		boolean to = false, from = false;
@@ -635,57 +610,61 @@ public class ReadingKDMFile {
 			*/
 			
 			packageToAndFrom = getOriginAndDestiny(to, from);
-
-			for (Layer layers1 : layers) {
+			
+			//verifica se os pacotes de origem e destino sao iguais, caso sejam, nao cria novo relacionamento
+			if (!packageToAndFrom[0].getName().equals(packageToAndFrom[1].getName())) {
 				
-				//Itera nas layers ate encontrar a layer que corresponde a origem(from) da chamada(call) 
-				if (mappingLayerToPackage(layers1, packageToAndFrom[1])) {
-
-					//recupera todos os relacionamentos da camada (layer)
-					EList<AggregatedRelationship> aggregatedRelationship = layers1.getAggregated();
-
-					//verifica se existe algum relacionamento na camada (layer) atual
-					if (aggregatedRelationship.size() > 0) {
-
-						//caso exista, o algoritmo percorre a lista com o intuito de encontrar algum relacionamento que possua o destino (to) desejado
-						for (int i = 0; i < aggregatedRelationship.size(); i++) {
-
-							//verifica se o campo TO da CALL existe em algum relacionamento, na pratica ele verifica se o pacote TO
-							//da chamada ja esta cadastrado em algum dos relacionamentos
-							if (mappingLayerToPackage((Layer) aggregatedRelationship.get(i).getTo(), packageToAndFrom[0])) {
-								aggregatedRelationship.get(i).setDensity(aggregatedRelationship.get(i).getDensity() + 1);
-								aggregatedRelationship.get(i).getRelation().add(relation);
-								break;
-
-							} else if ((aggregatedRelationship.size()-1) == i) {
-								AggregatedRelationship newRelationship = CoreFactory.eINSTANCE.createAggregatedRelationship();
-								newRelationship.setDensity(1);
-								newRelationship.setFrom(layers1);
-								newRelationship.setTo(verifyLayerOwnerOfPackage(packageToAndFrom[0], layers));
-								newRelationship.getRelation().add(relation);
-								layers1.getAggregated().add(newRelationship);
-								break;
+				for (Layer layers1 : layers) {
+					
+					//Itera nas layers ate encontrar a layer que corresponde a origem(from) da chamada(call) 
+					if (mappingLayerToPackage(layers1, packageToAndFrom[1])) {
+	
+						//recupera todos os relacionamentos da camada (layer)
+						EList<AggregatedRelationship> aggregatedRelationship = layers1.getAggregated();
+	
+						//verifica se existe algum relacionamento na camada (layer) atual
+						if (aggregatedRelationship.size() > 0) {
+	
+							//caso exista, o algoritmo percorre a lista com o intuito de encontrar algum relacionamento que possua o destino (to) desejado
+							for (int i = 0; i < aggregatedRelationship.size(); i++) {
+	
+								//verifica se o campo TO da CALL existe em algum relacionamento, na pratica ele verifica se o pacote TO
+								//da chamada ja esta cadastrado em algum dos relacionamentos
+								if (mappingLayerToPackage((Layer) aggregatedRelationship.get(i).getTo(), packageToAndFrom[0])) {
+									aggregatedRelationship.get(i).setDensity(aggregatedRelationship.get(i).getDensity() + 1);
+									aggregatedRelationship.get(i).getRelation().add(relation);
+									break;
+	
+								} else if ((aggregatedRelationship.size()-1) == i) {
+									AggregatedRelationship newRelationship = CoreFactory.eINSTANCE.createAggregatedRelationship();
+									newRelationship.setDensity(1);
+									newRelationship.setFrom(layers1);
+									newRelationship.setTo(verifyLayerOwnerOfPackage(packageToAndFrom[0], layers));
+									newRelationship.getRelation().add(relation);
+									layers1.getAggregated().add(newRelationship);
+									break;
+								}
+															
 							}
-														
+	
+							
+	
+						} else { //se nao existir, cria um novo relacionamento
+							AggregatedRelationship newRelationship = CoreFactory.eINSTANCE.createAggregatedRelationship();
+							newRelationship.setDensity(1);
+							newRelationship.setFrom(layers1);
+							newRelationship.setTo(verifyLayerOwnerOfPackage(packageToAndFrom[0], layers));
+							newRelationship.getRelation().add(relation);
+							layers1.getAggregated().add(newRelationship);
 						}
-
 						
-
-					} else { //se nao existir, cria um novo relacionamento
-						AggregatedRelationship newRelationship = CoreFactory.eINSTANCE.createAggregatedRelationship();
-						newRelationship.setDensity(1);
-						newRelationship.setFrom(layers1);
-						newRelationship.setTo(verifyLayerOwnerOfPackage(packageToAndFrom[0], layers));
-						newRelationship.getRelation().add(relation);
-						layers1.getAggregated().add(newRelationship);
+						break;
+	
 					}
 					
-					break;
-
+					//save(segmentMain, "C:/Users/Fernando/Documents/runtime-EclipseApplication/TesteModisco/Examples/MVCBasic_kdm.xmi");
+	
 				}
-				
-				//save(segmentMain, "C:/Users/Fernando/Documents/runtime-EclipseApplication/TesteModisco/Examples/MVCBasic_kdm.xmi");
-
 			}
 
 		}
@@ -806,6 +785,19 @@ public class ReadingKDMFile {
 		Package[] packageToAndFrom = new Package[2];
 		Package auxTo = null;
 		Package auxFrom = null;
+		
+		/*Identificamos um erro que quando temos Arraylist (listas), o modisco retorna um TemplateType que o topo de sua arvore
+		 * eh um CodeModel ao inves de um Pacote. Porem, eh possivel buscar o codeRelation do TemplateType e assim encontrar o pacote
+		 * que instacia esta classe.
+		 */
+		
+		if (to instanceof TemplateType) {
+			to = getToOfTemplateType((TemplateType)to);
+		}
+		if (from instanceof TemplateType) {
+			from = getToOfTemplateType((TemplateType)from);
+		}
+			
 
 		auxTo = getToOrFrom(to, auxTo);
 		auxFrom = getToOrFrom(from, auxFrom);
@@ -815,6 +807,11 @@ public class ReadingKDMFile {
 		return packageToAndFrom;
 
 
+	}
+	
+	private EObject getToOfTemplateType (TemplateType element) {
+		
+		return element.getCodeRelation().get(0).getTo();	
 	}
 
 	/** 
