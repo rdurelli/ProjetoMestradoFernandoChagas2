@@ -25,11 +25,14 @@ import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeFactory;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeItem;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeModel;
+import org.eclipse.gmt.modisco.omg.kdm.code.DataElement;
 import org.eclipse.gmt.modisco.omg.kdm.code.Datatype;
 import org.eclipse.gmt.modisco.omg.kdm.code.HasType;
 import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
+import org.eclipse.gmt.modisco.omg.kdm.code.ParameterUnit;
+import org.eclipse.gmt.modisco.omg.kdm.code.Signature;
 import org.eclipse.gmt.modisco.omg.kdm.code.StorableUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.TemplateType;
 import org.eclipse.gmt.modisco.omg.kdm.core.AggregatedRelationship;
@@ -102,7 +105,7 @@ public class ReadingKDMFile {
 	
 	
 	
-	public ArrayList<StorableUnit> fetchAllStorableUnit (ClassUnit classUnitToGetTheStorableUnits) {
+	public ArrayList<StorableUnit> fetchAllStorableUnitFromClassUnit (ClassUnit classUnitToGetTheStorableUnits) {
 		
 		ArrayList<StorableUnit> allStorableUnits = new ArrayList<StorableUnit>();
 		
@@ -122,7 +125,7 @@ public class ReadingKDMFile {
 		
 	}
 	
-	public ArrayList<HasType> fetchAllHasType (StorableUnit storableUnitToGetTheHasType) {
+	public ArrayList<HasType> fetchAllHasTypeFromStorableUnits (StorableUnit storableUnitToGetTheHasType) {
 		
 		ArrayList<HasType> auxAllHasType = new ArrayList<HasType>();
 						
@@ -144,13 +147,51 @@ public class ReadingKDMFile {
 		
 	}
 	
-	public void addHasTypeToSegment (ArrayList<StorableUnit> allStorableUnitOfAClass) {
+	public ArrayList<HasType> fetchAllHasTypeFromParameterUnits (ParameterUnit parameterUnitToGetTheHasType) {
+		
+		ArrayList<HasType> auxAllHasType = new ArrayList<HasType>();
+						
+		EList<AbstractCodeRelationship> allRelations = parameterUnitToGetTheHasType.getCodeRelation();
+		
+		for (AbstractCodeRelationship abstractCodeRelationship : allRelations) {
+			
+			if (abstractCodeRelationship instanceof HasType) {
+								
+				if (verifyIfRelationContaisLayer(abstractCodeRelationship, this.allLayers)) {				
+					auxAllHasType.add((HasType)abstractCodeRelationship);
+				}
+				
+			}
+			
+		}
+		
+		return auxAllHasType;
+		
+	}
+	
+	/** 
+	 * Esse metodo e responsavel por adicionar um HasType como CodeRelation para cada StorableUnit
+	 * 
+	 * @param  allStorableUnitOfAClass representa todas as StorableUnits de uma Classe
+	 */
+	
+	public void addHasTypeToStorableUnit (ArrayList<StorableUnit> allStorableUnitOfAClass) {
 		
 		for (StorableUnit storableUnit : allStorableUnitOfAClass) {
 			
 			HasType hasType = CodeFactory.eINSTANCE.createHasType();
 			
-			hasType.setFrom((ClassUnit)storableUnit.eContainer());
+			CodeItem auxFrom;
+			
+			if (storableUnit.eContainer() instanceof ActionElement) {
+				// caso de um StorableUnit dentro de ActionElement, sobe na arvore ate alcancar um methodUnit
+				auxFrom = (MethodUnit)storableUnit.eContainer().eContainer().eContainer();
+			} else {
+				// caso de um StorableUnit dentro de um ClassUnit
+				auxFrom = (ClassUnit)storableUnit.eContainer();
+			}
+				
+			hasType.setFrom(auxFrom);
 			
 			Datatype dataType = storableUnit.getType();
 			
@@ -158,11 +199,32 @@ public class ReadingKDMFile {
 			
 			storableUnit.getCodeRelation().add(hasType);					
 
+		}			
+		
+	}
+	
+	/** 
+	 * Esse metodo e responsavel por adicionar um HasType como CodeRelation para cada ParameterUnit
+	 * 
+	 * @param  allParameterUnits representa todas os parametros (ParameterUnit) de uma assinatura de metodo (Signature)
+	 */
+	
+	public void addHasTypeToSignature (ArrayList<ParameterUnit> allParameterUnits) {
+		
+		for (ParameterUnit auxParameterUnit : allParameterUnits) {
+			
+			HasType hasType = CodeFactory.eINSTANCE.createHasType();
+			
+			hasType.setFrom((Signature)auxParameterUnit.eContainer());					
+			
+			Datatype dataType = auxParameterUnit.getType();
+			
+			hasType.setTo(dataType);
+			
+			auxParameterUnit.getCodeRelation().add(hasType);
+			
 		}
-		
-		//this.save(segmentMain, "file:/Users/rafaeldurelli/Documents/runtime-EclipseApplication/ProjetoFernandoChagas/example/newKDM.xmi");
-		
-		
+				
 	}
 	
 	
@@ -414,6 +476,32 @@ public class ReadingKDMFile {
 		return methodUnit;
 
 	}
+	
+	/** 
+	 * Esse metodo e responsavel por obter todos os parameterUnit dado uma MethodUnit
+	 * @param methodUnit, que representa uma instancia de um metodo do KDM
+	 * @return ArrayList<ParameterUnit> todos os parametros de um Metodo.
+	 */
+	public ArrayList<ParameterUnit> fetchAllParameterUnits (MethodUnit methodUnit) {	
+		
+		ArrayList<ParameterUnit> parameterUnits = new ArrayList<ParameterUnit>();
+		
+		//Pega primeiro a assinatura do metodo, que esta sempre na posicao 0
+		Signature auxSignature = (Signature) methodUnit.getCodeElement().get(0);
+		
+		
+		//Pega a lista de parametros
+		EList<ParameterUnit> auxListParameterUnit = auxSignature.getParameterUnit();
+		
+		
+		for (ParameterUnit parameterUnit : auxListParameterUnit) {			
+			parameterUnits.add(parameterUnit);			
+		}
+				
+		return parameterUnits;
+
+	}
+	
 
 	
 	/** 
@@ -458,6 +546,36 @@ public class ReadingKDMFile {
 		}
 
 		return relations;
+
+	}
+	
+	/** 
+	 * Esse metodo e responsavel por obter todos os ActionElement do tipo "variable declaration" dado um BlockUnit
+	 * @param blockUnit representa uma instancia de um BlockUnit do KDM
+	 * @return List<Calls>
+	 */
+	public List<StorableUnit> fetchStorableUnitsFromBlockUnit(BlockUnit blockUnit) {
+
+		ArrayList<StorableUnit> storableUnits = new ArrayList<StorableUnit>();
+
+		EList<AbstractCodeElement> allElementsOfTheBlockUnit = blockUnit.getCodeElement();
+
+		for (AbstractCodeElement auxBlockUnit : allElementsOfTheBlockUnit) {
+
+			if (auxBlockUnit instanceof ActionElement && auxBlockUnit.getName().equals("variable declaration")) {
+				ActionElement auxActionElement = (ActionElement) auxBlockUnit;
+				
+				StorableUnit auxStorableUnit = (StorableUnit) auxActionElement.getCodeElement().get(0);
+				
+				System.err.println(auxStorableUnit.getName());
+				
+				//O StorableUnit se encontra no primeiro codeElement do ActionElement "variable declaration"
+				storableUnits.add(auxStorableUnit );
+			}
+
+		}
+
+		return storableUnits;
 
 	}
 

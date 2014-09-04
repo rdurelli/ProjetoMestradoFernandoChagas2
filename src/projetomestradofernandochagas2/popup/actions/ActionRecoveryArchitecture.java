@@ -10,6 +10,7 @@ import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
+import org.eclipse.gmt.modisco.omg.kdm.code.ParameterUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.StorableUnit;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
@@ -43,7 +44,9 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		String kdmProjectPath = "";
 		
-		ArrayList<StorableUnit> allStorableUnit = new ArrayList<StorableUnit>();
+		ArrayList<StorableUnit> allStorableUnits = new ArrayList<StorableUnit>();
+		
+		ArrayList<ParameterUnit> allParameterUnits = new ArrayList<ParameterUnit>();
 		
 		kdmFilePath = this.file.getLocationURI().toString();
 		
@@ -65,25 +68,49 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 			ArrayList<MethodUnit> methodUnits = readingKDM.getMethods(classUnit1);
 			readingKDM.getAllMethodUnits().addAll(methodUnits);
 			
-			allStorableUnit.addAll(readingKDM.fetchAllStorableUnit(classUnit1));
+			//busca todos os StorableUnits de uma ClassUnit
+			allStorableUnits.addAll(readingKDM.fetchAllStorableUnitFromClassUnit(classUnit1));
 		}
 		
-		readingKDM.addHasTypeToSegment(allStorableUnit);
+		System.out.println("SU size: " + allStorableUnits.size());		
 		
-		for (StorableUnit storableUnit : allStorableUnit) {
+		for (MethodUnit auxMethodUnit: readingKDM.getAllMethodUnits()) {
+			if (readingKDM.getBlockUnit(auxMethodUnit) != null)
+				readingKDM.getAllBlockUnits().add(readingKDM.getBlockUnit(auxMethodUnit));		
 			
-			readingKDM.getAllHasType().addAll(readingKDM.fetchAllHasType(storableUnit));
-			
-		}			
+			//busca todos os ParameterUnit de cada Metodo
+			allParameterUnits.addAll(readingKDM.fetchAllParameterUnits(auxMethodUnit));
+		}	
 		
-		for (MethodUnit methodUnit1: readingKDM.getAllMethodUnits()) {
-			if (readingKDM.getBlockUnit(methodUnit1) != null)
-				readingKDM.getAllBlockUnits().add(readingKDM.getBlockUnit(methodUnit1));		
-		}
+		//readingKDM.addHasTypeToSignature(allParameterUnits);
+		
+		/*for (ParameterUnit parameterUnit : allParameterUnits) {
+			
+			readingKDM.getAllHasType().addAll(readingKDM.fetchAllHasTypeFromParameterUnits(parameterUnit));			
+		}*/
+		
+		
+		System.err.println("Size BU: " + readingKDM.getAllBlockUnits().size());
 		
 		for (BlockUnit blockUnit : readingKDM.getAllBlockUnits()) {
 			readingKDM.getAllCalls().addAll(readingKDM.getRelations(blockUnit));
+			//busca os StorableUnits dentro dos blockUnits
+			allStorableUnits.addAll(readingKDM.fetchStorableUnitsFromBlockUnit(blockUnit));
 		}
+		
+		System.out.println("SU size2: " + allStorableUnits.size());
+		//adiciona todos os hasType necessários para os StorablesUnits
+		readingKDM.addHasTypeToStorableUnit(allStorableUnits);
+		
+		for (StorableUnit storableUnit : allStorableUnits) {
+			
+			//busca todos os HasTypes de storableUnits
+			readingKDM.getAllHasType().addAll(readingKDM.fetchAllHasTypeFromStorableUnits(storableUnit));
+			
+		}	
+		
+		System.err.println("Size HT: " + readingKDM.getAllHasType().size());
+		
 		
 		readingKDM.setAllLayers(readingKDM.getAllLayers(segment));
 		
