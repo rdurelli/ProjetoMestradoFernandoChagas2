@@ -149,6 +149,8 @@ public class ReadingKDMFile {
 	
 	public ArrayList<HasType> fetchAllHasTypeFromParameterUnits (ParameterUnit parameterUnitToGetTheHasType) {
 		
+		
+		System.out.println("Entrou");
 		ArrayList<HasType> auxAllHasType = new ArrayList<HasType>();
 						
 		EList<AbstractCodeRelationship> allRelations = parameterUnitToGetTheHasType.getCodeRelation();
@@ -636,6 +638,11 @@ public class ReadingKDMFile {
 	private boolean verifyIfRelationContaisLayer (KDMRelationship relationToVerify, ArrayList<Layer> allLayers) {
 		
 		Package[] packageToAndFrom = getOriginAndDestiny(relationToVerify.getTo(),relationToVerify.getFrom());
+		
+		if (packageToAndFrom[0] == null || packageToAndFrom[1] == null) {
+			return false;
+		}
+		
 		boolean to = false, from = false;
 		
 		
@@ -944,7 +951,12 @@ public class ReadingKDMFile {
 		if (element instanceof Package) {
 
 			return (Package) element;
-		} else {
+			
+		} else if (element instanceof Segment) {
+			
+			return null;
+		}
+			else {
 			toOrFrom = getToOrFrom(element.eContainer(), toOrFrom);
 
 		}

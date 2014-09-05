@@ -82,12 +82,14 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 			allParameterUnits.addAll(readingKDM.fetchAllParameterUnits(auxMethodUnit));
 		}	
 		
-		//readingKDM.addHasTypeToSignature(allParameterUnits);
+		readingKDM.addHasTypeToSignature(allParameterUnits);
 		
-		/*for (ParameterUnit parameterUnit : allParameterUnits) {
+		for (ParameterUnit parameterUnit : allParameterUnits) {
 			
 			readingKDM.getAllHasType().addAll(readingKDM.fetchAllHasTypeFromParameterUnits(parameterUnit));			
-		}*/
+		}
+		
+		System.out.println(" O Size e esse:" + readingKDM.getAllHasType().size());
 		
 		
 		System.err.println("Size BU: " + readingKDM.getAllBlockUnits().size());
