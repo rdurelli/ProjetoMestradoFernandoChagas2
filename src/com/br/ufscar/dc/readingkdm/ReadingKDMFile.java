@@ -528,9 +528,9 @@ public class ReadingKDMFile {
 	}
 	
 	/** 
-	 * Esse metodo e responsavel por obter todos os Calls dado um BlockUnit
+	 * Esse metodo e responsavel por obter todos os AbstractActionRelationship (ate o momento Calls e UsesType) dado um BlockUnit
 	 * @param blockUnit representa uma instancia de um BlockUnit do KDM
-	 * @return List<Calls>
+	 * @return List<AbstractActionRelationship>
 	 */
 	public List<AbstractActionRelationship> getRelations(BlockUnit blockUnit) {
 
@@ -556,7 +556,7 @@ public class ReadingKDMFile {
 	/** 
 	 * Esse metodo e responsavel por obter todos os ActionElement do tipo "variable declaration" dado um BlockUnit
 	 * @param blockUnit representa uma instancia de um BlockUnit do KDM
-	 * @return List<Calls>
+	 * @return List<StorableUnit> 
 	 */
 	public List<StorableUnit> fetchStorableUnitsFromBlockUnit(BlockUnit blockUnit) {
 
@@ -585,10 +585,10 @@ public class ReadingKDMFile {
 
 	
 	/** 
-	 * Esse metodo e responsavel por obter todos os Calls dado um BlockUnit
+	 * Esse metodo e responsavel por obter todos os AbstractActionRelationship (ate o momento Calls e UsesType) dado um BlockUnit
 	 * @param actionElement representa uma instancia do ActionElement
 	 * @param relations representa as relacoes
-	 * @return List<Calls>
+	 * @return List<AbstractActionRelationship>
 	 */
 	private ArrayList<AbstractActionRelationship> getActionsRelationships(
 			ActionElement actionElement, ArrayList<AbstractActionRelationship> relations) {
