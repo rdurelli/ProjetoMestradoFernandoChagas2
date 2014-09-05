@@ -551,6 +551,45 @@ public class ReadingKDMFile {
 
 	}
 	
+	
+	/** 
+	 * Esse metodo e responsavel por obter todos os Calls dentro deu uma ClassUnit que se localizam no CodeExternal
+	 * @param segment representa uma instancia de um Segment do KDM
+	 * @return ArrayList<Calls>
+	 */
+	public ArrayList<Calls> getExternalCalls (Segment segment) {
+		
+		CodeModel codeModel = (CodeModel) segment.getModel().get(1);
+		
+		ArrayList<Calls> allCalls = new ArrayList<Calls>();
+		
+		EList<AbstractCodeElement> allAbstractCodeElement = codeModel.getCodeElement();
+		
+		for (AbstractCodeElement abstractCodeElement : allAbstractCodeElement) {
+			if (abstractCodeElement instanceof ActionElement) {
+				
+				ActionElement actionElement = (ActionElement) abstractCodeElement;
+				
+				
+				EList<AbstractActionRelationship> allActions = actionElement.getActionRelation();
+				
+				for (AbstractActionRelationship abstractActionRelationship : allActions) {
+					
+					if (abstractActionRelationship instanceof Calls) {
+						
+						allCalls.add((Calls)abstractActionRelationship);
+						
+					}
+					
+				}
+				
+				
+			}
+		}
+		return allCalls;
+	}
+	
+	
 	/** 
 	 * Esse metodo e responsavel por obter todos os ActionElement do tipo "variable declaration" dado um BlockUnit
 	 * @param blockUnit representa uma instancia de um BlockUnit do KDM

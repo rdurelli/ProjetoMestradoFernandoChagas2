@@ -100,6 +100,10 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 			allStorableUnits.addAll(readingKDM.fetchStorableUnitsFromBlockUnit(blockUnit));
 		}
 		
+		
+		readingKDM.getAllCalls().addAll(readingKDM.getExternalCalls(readingKDM.getSegmentMain()));
+		
+		
 		System.out.println("SU size2: " + allStorableUnits.size());
 		//adiciona todos os hasType necessários para os StorablesUnits
 		readingKDM.addHasTypeToStorableUnit(allStorableUnits);
@@ -127,6 +131,7 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllRelationships());		
 		
 		System.out.println("ProjectPath: " + kdmProjectPath);
+		
 		
 		readingKDM.save(segment, "file:"+kdmProjectPath+"/Examples/newKDM.xmi");
 		
