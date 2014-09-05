@@ -611,12 +611,12 @@ public class ReadingKDMFile {
 
 					for (AbstractActionRelationship abstractActionRelationship : allRelationhips) {
 
-						if (abstractActionRelationship instanceof Calls) {
+						if (abstractActionRelationship instanceof Calls || abstractActionRelationship instanceof UsesType) {
 							
 							ArrayList<Layer> allLayers = getAllLayers(this.segmentMain);
 							
 							if (verifyIfRelationContaisLayer(abstractActionRelationship, allLayers)) {
-								relations.add((Calls) abstractActionRelationship);
+								relations.add(abstractActionRelationship);
 							}
 							
 						}						
