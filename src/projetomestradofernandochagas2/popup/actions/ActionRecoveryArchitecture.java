@@ -1,6 +1,7 @@
 package projetomestradofernandochagas2.popup.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
@@ -95,14 +96,10 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		System.err.println("Size BU: " + readingKDM.getAllBlockUnits().size());
 		
 		for (BlockUnit blockUnit : readingKDM.getAllBlockUnits()) {
-			readingKDM.getAllCalls().addAll(readingKDM.getRelations(blockUnit));
+			readingKDM.getAllAbstractActionRelationships().addAll(readingKDM.getRelations(blockUnit));
 			//busca os StorableUnits dentro dos blockUnits
 			allStorableUnits.addAll(readingKDM.fetchStorableUnitsFromBlockUnit(blockUnit));
 		}
-		
-		
-		readingKDM.getAllCalls().addAll(readingKDM.getExternalCalls(readingKDM.getSegmentMain()));
-		
 		
 		System.out.println("SU size2: " + allStorableUnits.size());
 		//adiciona todos os hasType necessários para os StorablesUnits
@@ -124,7 +121,7 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 			readingKDM.getAllRelationships().addAll(readingKDM.addImportsImplementsAndExtends(class1, readingKDM.getAllLayers()));
 		}				
 		
-		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllCalls());
+		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllAbstractActionRelationships());
 		
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllHasType());
 		

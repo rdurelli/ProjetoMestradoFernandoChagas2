@@ -18,6 +18,7 @@ import org.eclipse.gmt.modisco.omg.kdm.action.ActionElement;
 import org.eclipse.gmt.modisco.omg.kdm.action.ActionRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.action.BlockUnit;
 import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
+import org.eclipse.gmt.modisco.omg.kdm.action.UsesType;
 import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeElement;
 import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.code.CallableUnit;
@@ -76,6 +77,8 @@ public class ReadingKDMFile {
 	private ArrayList<KDMRelationship> allRelationships = new ArrayList<KDMRelationship>();
 	
 	private ArrayList<HasType> allHasType = new ArrayList<HasType>();
+	
+	private ArrayList<AbstractActionRelationship> allAbstractActionRelationships = new ArrayList<AbstractActionRelationship>();
 	
 	/** 
 	 * Retorna um segmento passando como parametro o caminho completo de um arquivo KDM.
@@ -523,16 +526,15 @@ public class ReadingKDMFile {
 			return null;
 
 	}
-
 	
 	/** 
 	 * Esse metodo e responsavel por obter todos os Calls dado um BlockUnit
 	 * @param blockUnit representa uma instancia de um BlockUnit do KDM
 	 * @return List<Calls>
 	 */
-	public List<Calls> getRelations(BlockUnit blockUnit) {
+	public List<AbstractActionRelationship> getRelations(BlockUnit blockUnit) {
 
-		ArrayList<Calls> relations = new ArrayList<Calls>();
+		ArrayList<AbstractActionRelationship> relations = new ArrayList<AbstractActionRelationship>();
 
 		EList<AbstractCodeElement> allElementsOfTheMethod = blockUnit
 				.getCodeElement();
@@ -550,45 +552,6 @@ public class ReadingKDMFile {
 		return relations;
 
 	}
-	
-	
-	/** 
-	 * Esse metodo e responsavel por obter todos os Calls dentro deu uma ClassUnit que se localizam no CodeExternal
-	 * @param segment representa uma instancia de um Segment do KDM
-	 * @return ArrayList<Calls>
-	 */
-	public ArrayList<Calls> getExternalCalls (Segment segment) {
-		
-		CodeModel codeModel = (CodeModel) segment.getModel().get(1);
-		
-		ArrayList<Calls> allCalls = new ArrayList<Calls>();
-		
-		EList<AbstractCodeElement> allAbstractCodeElement = codeModel.getCodeElement();
-		
-		for (AbstractCodeElement abstractCodeElement : allAbstractCodeElement) {
-			if (abstractCodeElement instanceof ActionElement) {
-				
-				ActionElement actionElement = (ActionElement) abstractCodeElement;
-				
-				
-				EList<AbstractActionRelationship> allActions = actionElement.getActionRelation();
-				
-				for (AbstractActionRelationship abstractActionRelationship : allActions) {
-					
-					if (abstractActionRelationship instanceof Calls) {
-						
-						allCalls.add((Calls)abstractActionRelationship);
-						
-					}
-					
-				}
-				
-				
-			}
-		}
-		return allCalls;
-	}
-	
 	
 	/** 
 	 * Esse metodo e responsavel por obter todos os ActionElement do tipo "variable declaration" dado um BlockUnit
@@ -627,8 +590,8 @@ public class ReadingKDMFile {
 	 * @param relations representa as relacoes
 	 * @return List<Calls>
 	 */
-	private ArrayList<Calls> getActionsRelationships(
-			ActionElement actionElement, ArrayList<Calls> relations) {
+	private ArrayList<AbstractActionRelationship> getActionsRelationships(
+			ActionElement actionElement, ArrayList<AbstractActionRelationship> relations) {
 
 		EList<AbstractCodeElement> allElements = actionElement.getCodeElement();
 
@@ -656,7 +619,7 @@ public class ReadingKDMFile {
 								relations.add((Calls) abstractActionRelationship);
 							}
 							
-						}
+						}						
 
 					}
 
@@ -1175,6 +1138,15 @@ public class ReadingKDMFile {
 	
 	public void setAllHasType(ArrayList<HasType> allHasType) {
 		this.allHasType = allHasType;
+	}
+
+	public ArrayList<AbstractActionRelationship> getAllAbstractActionRelationships() {
+		return allAbstractActionRelationships;
+	}
+	
+	public void setAllAbstractActionRelationships(
+			ArrayList<AbstractActionRelationship> allAbstractActionRelationships) {
+		this.allAbstractActionRelationships = allAbstractActionRelationships;
 	}
 	
 }
