@@ -29,6 +29,7 @@ import org.eclipse.gmt.modisco.omg.kdm.code.CodeModel;
 import org.eclipse.gmt.modisco.omg.kdm.code.DataElement;
 import org.eclipse.gmt.modisco.omg.kdm.code.Datatype;
 import org.eclipse.gmt.modisco.omg.kdm.code.HasType;
+import org.eclipse.gmt.modisco.omg.kdm.code.HasValue;
 import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
@@ -611,7 +612,7 @@ public class ReadingKDMFile {
 
 					for (AbstractActionRelationship abstractActionRelationship : allRelationhips) {
 
-						if (abstractActionRelationship instanceof Calls || abstractActionRelationship instanceof UsesType) {
+						if (abstractActionRelationship instanceof Calls || abstractActionRelationship instanceof UsesType || (abstractActionRelationship instanceof HasValue && abstractActionRelationship.getAnnotation().size() > 0)) {
 							
 							ArrayList<Layer> allLayers = getAllLayers(this.segmentMain);
 							
