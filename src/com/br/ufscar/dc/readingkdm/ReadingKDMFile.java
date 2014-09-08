@@ -203,11 +203,13 @@ public class ReadingKDMFile {
 			
 			Datatype dataType = storableUnit.getType();
 			
+			System.out.println("Todos os Types "+ dataType);
+			
 			//Caso de 1:*
-			if (dataType instanceof TemplateUnit) {
+			if (dataType instanceof TemplateType) {
 				
 				//desce na arvore do TemplateUnit
-				TemplateUnit auxTemplateUnit = (TemplateUnit) dataType;
+				TemplateType auxTemplateUnit = (TemplateType) dataType;
 				EList<AbstractCodeRelationship> auxAbstractCodeRelationship = auxTemplateUnit.getCodeRelation();
 				ParameterTo auxParameterTo = (ParameterTo) auxAbstractCodeRelationship.get(0);
 
