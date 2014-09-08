@@ -28,8 +28,10 @@ import org.eclipse.gmt.modisco.omg.kdm.code.CodeItem;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeModel;
 import org.eclipse.gmt.modisco.omg.kdm.code.DataElement;
 import org.eclipse.gmt.modisco.omg.kdm.code.Datatype;
+import org.eclipse.gmt.modisco.omg.kdm.code.Extends;
 import org.eclipse.gmt.modisco.omg.kdm.code.HasType;
 import org.eclipse.gmt.modisco.omg.kdm.code.HasValue;
+import org.eclipse.gmt.modisco.omg.kdm.code.Implements;
 import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
@@ -46,6 +48,9 @@ import org.eclipse.gmt.modisco.omg.kdm.core.KDMRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KDMModel;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmPackage;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
+import org.eclipse.gmt.modisco.omg.kdm.source.SourceFile;
+import org.eclipse.gmt.modisco.omg.kdm.source.SourceRef;
+import org.eclipse.gmt.modisco.omg.kdm.source.SourceRegion;
 import org.eclipse.gmt.modisco.omg.kdm.structure.AbstractStructureElement;
 import org.eclipse.gmt.modisco.omg.kdm.structure.Layer;
 import org.eclipse.gmt.modisco.omg.kdm.structure.StructureFactory;
@@ -422,6 +427,38 @@ public class ReadingKDMFile {
 		return allClasses;
 
 	}
+	
+	/** 
+	 * Esse metodo e responsavel por obter todas as Interfaces da instancia do KDM
+	 * @param segment, o segment que representa a instancia do modelo
+	 * @return ArrayList<ClassUnit> todas as Classes do sistema.
+	 */
+	public ArrayList<InterfaceUnit> getAllInterfaces(Segment segment) {
+
+		ArrayList<InterfaceUnit> allInterface = new ArrayList<InterfaceUnit>();
+
+		CodeModel codeModel = (CodeModel) segment.getModel().get(0);
+
+		EList<AbstractCodeElement> elements = codeModel.getCodeElement();
+
+		for (int i = 0; i < elements.size() - 1; i++) {
+
+			System.out.println(elements.get(i));
+
+			if (elements.get(i) instanceof Package) {
+
+				Package packageKDM = (Package) elements.get(i);
+
+				this.getInterfaces(packageKDM.getCodeElement(), allInterface);
+
+			}
+
+		}
+
+		return allInterface;
+
+	}
+	
 
 	/** 
 	 * Esse metodo e responsavel por obter todas as classes da instancia do KDM
@@ -447,6 +484,32 @@ public class ReadingKDMFile {
 		}
 
 	}
+	
+	/** 
+	 * Esse metodo e responsavel por obter todas as classes da instancia do KDM
+	 * @param elements, representa todos os elementos
+	 */
+	private void getInterfaces(EList<AbstractCodeElement> elements,
+			ArrayList<InterfaceUnit> allClasses) {
+
+		for (AbstractCodeElement abstractCodeElement : elements) {
+
+			if (abstractCodeElement instanceof InterfaceUnit) {
+
+				allClasses.add((InterfaceUnit) abstractCodeElement);
+
+			} else if (abstractCodeElement instanceof Package) {
+
+				Package packageToPass = (Package) abstractCodeElement;
+
+				getInterfaces(packageToPass.getCodeElement(), allClasses);
+
+			}
+
+		}
+
+	}
+	
 	
 	/** 
 	 * Esse metodo e responsavel por obter todos os imports, implements e extends contidos em uma ClassUnit
@@ -500,6 +563,119 @@ public class ReadingKDMFile {
 		return methodUnit;
 
 	}
+	
+
+	
+	
+	public HasValue getRelationShipBetweenAnnotation(HasValue hasValue) {
+
+		InterfaceUnit toToVerify = (InterfaceUnit) hasValue.getTo();
+		
+
+		ArrayList<AbstractCodeRelationship> relations = new ArrayList<AbstractCodeRelationship>();
+		
+		if (((Package) toToVerify.eContainer()).getName().equals("lang")) {
+
+			ClassUnit classUnit = (ClassUnit) hasValue.getFrom().eContainer();
+			
+			EList<AbstractCodeRelationship> allRelation = classUnit.getCodeRelation();
+			
+			
+			
+			for (AbstractCodeRelationship abstractCodeRelationship : allRelation) {
+				
+				if (abstractCodeRelationship instanceof Extends || abstractCodeRelationship instanceof Implements) {
+					
+					relations.add(abstractCodeRelationship);
+					
+				}
+				
+			}
+			
+			
+			for (int i = 0; i < relations.size(); i++) {
+		
+				KDMEntity to = relations.get(i).getTo();
+				
+				if (to instanceof ClassUnit) {
+					
+					//TODO
+					
+				} else if (to instanceof InterfaceUnit) {
+					
+					InterfaceUnit interfaceUnit = (InterfaceUnit) to;
+					
+					List<MethodUnit> allMethods = this.getMethods(interfaceUnit);
+					
+					for (MethodUnit methodUnit : allMethods) {
+						
+						if (methodUnit.getName().equals(hasValue.getFrom().getName())) {
+							
+							
+							hasValue.setTo(methodUnit);
+							return hasValue;
+							
+						}
+						
+					}
+					
+					
+				}
+				
+				if (i == (relations.size()-1)) {
+					
+					return null;
+					
+				}
+				
+			}
+			
+			
+		}
+		return hasValue;
+
+	}
+	
+	public ClassUnit getClassUnit (Segment segment, String name) {
+		
+		ArrayList<ClassUnit> allClasses = this.getAllClasses(segment);
+		
+		ClassUnit classToReturn = null;
+		
+		for (ClassUnit classUnit : allClasses) {
+			if (classUnit.getName().equals(name)) {
+				
+				classToReturn = classUnit;
+				break;
+				
+			}
+		}
+		
+		return classToReturn;
+		
+	}
+	
+	public InterfaceUnit getInterfaceUnit (Segment segment, String name) {
+		
+		ArrayList<InterfaceUnit> allInterface = this.getAllInterfaces(segment);
+		
+		InterfaceUnit interfaceToReturn = null;
+		
+		for (InterfaceUnit interfaceUnit : allInterface) {
+			if (interfaceUnit.getName().equals(name)) {
+				
+				interfaceToReturn = interfaceUnit;
+				break;
+				
+			}
+		}
+		
+		
+		return interfaceToReturn;
+		
+	}
+	
+	
 	
 	/** 
 	 * Esse metodo e responsavel por obter uma annotation em forma de HasValue.

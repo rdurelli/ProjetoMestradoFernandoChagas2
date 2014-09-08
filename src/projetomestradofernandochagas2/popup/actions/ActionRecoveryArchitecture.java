@@ -9,6 +9,7 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.gmt.modisco.omg.kdm.action.BlockUnit;
 import org.eclipse.gmt.modisco.omg.kdm.action.Calls;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
+import org.eclipse.gmt.modisco.omg.kdm.code.HasValue;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
 import org.eclipse.gmt.modisco.omg.kdm.code.ParameterUnit;
@@ -44,6 +45,8 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 	private void executeArchitetureMapping (String kdmFilePath, Segment segment) {
 		
 		String kdmProjectPath = "";
+		
+		ArrayList<HasValue> auxHasValue = new ArrayList<HasValue>();
 		
 		ArrayList<StorableUnit> allStorableUnits = new ArrayList<StorableUnit>();
 		
@@ -83,9 +86,30 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 			allParameterUnits.addAll(readingKDM.fetchAllParameterUnits(auxMethodUnit));
 			
 			if (readingKDM.fetchAnnotation(auxMethodUnit) != null) {
-				readingKDM.getAllHasValues().add(readingKDM.fetchAnnotation(auxMethodUnit));				
+				auxHasValue.add(readingKDM.fetchAnnotation(auxMethodUnit));
+				//verificar se a Annotation possui em seu campo TO algum derivado do PACOTE lang
+//				readingKDM.getAllHasValues().add(readingKDM.getRelationShipBetweenAnnotation(readingKDM.getAllHasValues().get(readingKDM.getAllHasValues().size() - 1))); 
 			}
 		}	
+		
+		
+		for (HasValue hasValue : auxHasValue) {
+			
+			HasValue aux = null;
+			
+			aux = readingKDM.getRelationShipBetweenAnnotation(hasValue);
+			
+			if (aux != null) {
+			
+				readingKDM.getAllHasValues().add(aux);
+				
+			}
+
+			
+		}
+	
+		
+		
 		
 		System.err.println("hasValue size: " + readingKDM.getAllHasValues().size());
 		
@@ -127,6 +151,7 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 			readingKDM.getAllRelationships().addAll(readingKDM.addImportsImplementsAndExtends(class1, readingKDM.getAllLayers()));
 		}
 		
+		
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllHasValues());
 		
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllAbstractActionRelationships());
@@ -134,6 +159,8 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllHasType());
 		
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllRelationships());		
+		
+		
 		
 		System.out.println("ProjectPath: " + kdmProjectPath);
 		
