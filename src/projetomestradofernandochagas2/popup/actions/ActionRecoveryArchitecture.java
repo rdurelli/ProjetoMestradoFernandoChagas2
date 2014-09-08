@@ -47,7 +47,7 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		ArrayList<StorableUnit> allStorableUnits = new ArrayList<StorableUnit>();
 		
-		ArrayList<ParameterUnit> allParameterUnits = new ArrayList<ParameterUnit>();
+		ArrayList<ParameterUnit> allParameterUnits = new ArrayList<ParameterUnit>();			
 		
 		kdmFilePath = this.file.getLocationURI().toString();
 		
@@ -81,7 +81,13 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 			
 			//busca todos os ParameterUnit de cada Metodo
 			allParameterUnits.addAll(readingKDM.fetchAllParameterUnits(auxMethodUnit));
+			
+			if (readingKDM.fetchAnnotation(auxMethodUnit) != null) {
+				readingKDM.getAllHasValues().add(readingKDM.fetchAnnotation(auxMethodUnit));				
+			}
 		}	
+		
+		System.err.println("hasValue size: " + readingKDM.getAllHasValues().size());
 		
 		readingKDM.addHasTypeToSignature(allParameterUnits);
 		
@@ -119,7 +125,9 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		for (ClassUnit class1 : readingKDM.getAllClassUnits()) {
 			readingKDM.getAllRelationships().addAll(readingKDM.addImportsImplementsAndExtends(class1, readingKDM.getAllLayers()));
-		}				
+		}
+		
+		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllHasValues());
 		
 		readingKDM.createAggreatedRelationShips(readingKDM.getAllLayers(), readingKDM.getAllAbstractActionRelationships());
 		

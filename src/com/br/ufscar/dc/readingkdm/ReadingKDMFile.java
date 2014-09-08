@@ -83,6 +83,8 @@ public class ReadingKDMFile {
 	
 	private ArrayList<AbstractActionRelationship> allAbstractActionRelationships = new ArrayList<AbstractActionRelationship>();
 	
+	private ArrayList<HasValue> allHasValues = new ArrayList<HasValue>();
+	
 	/** 
 	 * Retorna um segmento passando como parametro o caminho completo de um arquivo KDM.
 	 * 
@@ -497,6 +499,32 @@ public class ReadingKDMFile {
 
 		return methodUnit;
 
+	}
+	
+	/** 
+	 * Esse metodo e responsavel por obter uma annotation em forma de HasValue.
+	 * Caso retorne null, significa que o metodo nao possui annotation.
+	 * @param auxMethodUnit, que representa uma instancia de um metodo do KDM
+	 * @return HasValue equivalente a uma annotation
+	 */
+	
+	public HasValue fetchAnnotation (MethodUnit auxMethodUnit) {
+		
+		EList<AbstractCodeRelationship> abstractCodeRelationships = auxMethodUnit.getCodeRelation();
+		
+		if (abstractCodeRelationships.size() > 0){
+		
+			if (abstractCodeRelationships.get(0) instanceof HasValue) {
+				
+				HasValue hasValue = (HasValue) abstractCodeRelationships.get(0);
+				
+				if (hasValue.getAnnotation() != null) {
+					return hasValue;
+				}
+				
+			}
+		}
+		return null;
 	}
 	
 	/** 
@@ -1165,5 +1193,13 @@ public class ReadingKDMFile {
 			ArrayList<AbstractActionRelationship> allAbstractActionRelationships) {
 		this.allAbstractActionRelationships = allAbstractActionRelationships;
 	}
+
+	public ArrayList<HasValue> getAllHasValues() {
+		return allHasValues;
+	}
+
+	public void setAllHasValues(ArrayList<HasValue> allHasValues) {
+		this.allHasValues = allHasValues;
+	}		
 	
 }
