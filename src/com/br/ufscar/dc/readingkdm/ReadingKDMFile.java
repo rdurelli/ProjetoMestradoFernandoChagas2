@@ -33,10 +33,12 @@ import org.eclipse.gmt.modisco.omg.kdm.code.HasValue;
 import org.eclipse.gmt.modisco.omg.kdm.code.InterfaceUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.MethodUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Package;
+import org.eclipse.gmt.modisco.omg.kdm.code.ParameterTo;
 import org.eclipse.gmt.modisco.omg.kdm.code.ParameterUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.Signature;
 import org.eclipse.gmt.modisco.omg.kdm.code.StorableUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.TemplateType;
+import org.eclipse.gmt.modisco.omg.kdm.code.TemplateUnit;
 import org.eclipse.gmt.modisco.omg.kdm.core.AggregatedRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.core.CoreFactory;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
@@ -200,6 +202,18 @@ public class ReadingKDMFile {
 			hasType.setFrom(auxFrom);
 			
 			Datatype dataType = storableUnit.getType();
+			
+			//Caso de 1:*
+			if (dataType instanceof TemplateUnit) {
+				
+				//desce na arvore do TemplateUnit
+				TemplateUnit auxTemplateUnit = (TemplateUnit) dataType;
+				EList<AbstractCodeRelationship> auxAbstractCodeRelationship = auxTemplateUnit.getCodeRelation();
+				ParameterTo auxParameterTo = (ParameterTo) auxAbstractCodeRelationship.get(0);
+
+				dataType = (Datatype) auxParameterTo.getTo();							
+								
+			} 
 			
 			hasType.setTo(dataType);
 			
