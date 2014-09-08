@@ -1130,12 +1130,12 @@
               <codeElement xsi:type="code:ClassUnit" name="TesteViewPrincipal" isAbstract="false">
                 <attribute tag="export" value="public"/>
                 <source language="java">
-                  <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                  <region file="/0/@model.2/@inventoryElement.14" language="java"/>
                 </source>
                 <codeElement xsi:type="code:MethodUnit" name="main" type="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.0/@codeElement.0/@codeElement.0/@codeElement.0">
                   <attribute tag="export" value="public"/>
                   <source language="java">
-                    <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                    <region file="/0/@model.2/@inventoryElement.14" language="java"/>
                   </source>
                   <codeElement xsi:type="code:Signature" name="main">
                     <parameterUnit type="/0/@model.0/@codeElement.3/@codeElement.5" kind="return">
@@ -1145,13 +1145,13 @@
                     </parameterUnit>
                     <parameterUnit name="args" type="/0/@model.1/@codeElement.4" kind="unknown">
                       <source language="java">
-                        <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                        <region file="/0/@model.2/@inventoryElement.14" language="java"/>
                       </source>
                     </parameterUnit>
                   </codeElement>
                   <codeElement xsi:type="action:BlockUnit">
                     <source language="java">
-                      <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                      <region file="/0/@model.2/@inventoryElement.14" language="java"/>
                     </source>
                     <comment text="// TODO Auto-generated method stub"/>
                   </codeElement>
@@ -1442,6 +1442,82 @@
                 </codeElement>
               </codeElement>
             </codeElement>
+            <codeElement xsi:type="code:ClassUnit" name="TesteExtends" isAbstract="false">
+              <attribute tag="export" value="public"/>
+              <source language="java">
+                <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+              </source>
+              <codeRelation xsi:type="code:Imports" to="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.1/@codeElement.1" from="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4"/>
+              <codeRelation xsi:type="code:Imports" to="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.1/@codeElement.4" from="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4"/>
+              <codeRelation xsi:type="code:Imports" to="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.1/@codeElement.2" from="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4"/>
+              <codeRelation xsi:type="code:Implements" to="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.1/@codeElement.4" from="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4"/>
+              <codeRelation xsi:type="code:Extends" to="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.1/@codeElement.2" from="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4"/>
+              <codeElement xsi:type="code:StorableUnit" name="teste" type="/0/@model.1/@codeElement.0/@codeElement.0/@codeElement.2">
+                <attribute tag="export" value="private"/>
+                <source language="java">
+                  <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                </source>
+                <codeRelation xsi:type="code:HasValue" to="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.1/@codeElement.1" from="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4/@codeElement.0">
+                  <annotation text="annotation"/>
+                </codeRelation>
+              </codeElement>
+              <codeElement xsi:type="code:MethodUnit" name="testeTryCatch" type="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4/@codeElement.1/@codeElement.0">
+                <attribute tag="export" value="public"/>
+                <source language="java">
+                  <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                </source>
+                <codeRelation xsi:type="code:HasValue" to="/0/@model.1/@codeElement.0/@codeElement.0/@codeElement.10" from="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4/@codeElement.1">
+                  <annotation text="annotation"/>
+                </codeRelation>
+                <codeRelation xsi:type="code:ImplementationOf" to="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.1/@codeElement.2/@codeElement.9" from="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4/@codeElement.1"/>
+                <codeElement xsi:type="code:Signature" name="testeTryCatch">
+                  <parameterUnit type="/0/@model.0/@codeElement.3/@codeElement.5" kind="return">
+                    <source language="java">
+                      <region language="java"/>
+                    </source>
+                  </parameterUnit>
+                </codeElement>
+                <codeElement xsi:type="action:BlockUnit">
+                  <source language="java">
+                    <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                  </source>
+                  <codeElement xsi:type="action:ActionElement" name="expression statement" kind="expression statement">
+                    <source language="java">
+                      <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                    </source>
+                    <comment text="// TODO Auto-generated method stub"/>
+                    <codeElement xsi:type="action:ActionElement" name="super method invocation" kind="super method invocation">
+                      <source language="java">
+                        <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                      </source>
+                      <actionRelation xsi:type="action:Calls" to="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.1/@codeElement.2/@codeElement.9" from="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4/@codeElement.1/@codeElement.1/@codeElement.0/@codeElement.0"/>
+                    </codeElement>
+                  </codeElement>
+                </codeElement>
+              </codeElement>
+              <codeElement xsi:type="code:MethodUnit" name="testeInterface" type="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4/@codeElement.2/@codeElement.0">
+                <attribute tag="export" value="public"/>
+                <source language="java">
+                  <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                </source>
+                <codeRelation xsi:type="code:HasValue" to="/0/@model.1/@codeElement.0/@codeElement.0/@codeElement.10" from="/0/@model.0/@codeElement.2/@codeElement.0/@codeElement.2/@codeElement.4/@codeElement.2">
+                  <annotation text="annotation"/>
+                </codeRelation>
+                <codeElement xsi:type="code:Signature" name="testeInterface">
+                  <parameterUnit type="/0/@model.0/@codeElement.3/@codeElement.5" kind="return">
+                    <source language="java">
+                      <region language="java"/>
+                    </source>
+                  </parameterUnit>
+                </codeElement>
+                <codeElement xsi:type="action:BlockUnit">
+                  <source language="java">
+                    <region file="/0/@model.2/@inventoryElement.13" language="java"/>
+                  </source>
+                  <comment text="// TODO Auto-generated method stub"/>
+                </codeElement>
+              </codeElement>
+            </codeElement>
           </codeElement>
         </codeElement>
       </codeElement>
@@ -1722,6 +1798,7 @@
       <inventoryElement xsi:type="source:SourceFile" name="ProductMainTest.java" path="D:\Backup\Projetos\MVCBasic\src\com\br\View\ProductMainTest.java" language="java"/>
       <inventoryElement xsi:type="source:SourceFile" name="ViewTestInterface.java" path="D:\Backup\Projetos\MVCBasic\src\com\br\View\ViewTestInterface.java" language="java"/>
       <inventoryElement xsi:type="source:SourceFile" name="MenuMainTest.java" path="D:\Backup\Projetos\MVCBasic\src\com\br\View\MenuMainTest.java" language="java"/>
+      <inventoryElement xsi:type="source:SourceFile" name="TesteExtends.java" path="D:\Backup\Projetos\MVCBasic\src\com\br\View\TesteExtends.java" language="java"/>
       <inventoryElement xsi:type="source:SourceFile" name="TesteViewPrincipal.java" path="D:\Backup\Projetos\MVCBasic\src\com\br\View\Principal\TesteViewPrincipal.java" language="java"/>
     </model>
   </kdm:Segment>
