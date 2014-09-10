@@ -93,22 +93,7 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		}	
 		
 		
-		for (HasValue hasValue : auxHasValue) {
 			
-			HasValue aux = null;
-			
-			aux = readingKDM.getRelationShipBetweenAnnotation(hasValue);
-			
-			if (aux != null) {
-			
-				readingKDM.getAllHasValues().add(aux);
-				
-			}
-
-			
-		}
-	
-		
 		
 		
 		System.err.println("hasValue size: " + readingKDM.getAllHasValues().size());
@@ -140,7 +125,44 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 			//busca todos os HasTypes de storableUnits
 			readingKDM.getAllHasType().addAll(readingKDM.fetchAllHasTypeFromStorableUnits(storableUnit));
 			
-		}	
+			if (readingKDM.fetchAnnotation(storableUnit) != null) {
+				
+				auxHasValue.add(readingKDM.fetchAnnotation(storableUnit));
+				
+			}
+			
+			
+			
+		}
+		
+		for (int i = 0; i < auxHasValue.size(); i++) {		
+
+			
+			System.out.println("Antes de remover " + auxHasValue.size());
+			
+			HasValue aux = null;
+			
+			
+			
+			aux = readingKDM.getRelationShipBetweenAnnotation(auxHasValue.get(i));
+			
+			if (aux == null) {
+				
+				auxHasValue.remove(auxHasValue.get(i--));
+				
+				System.out.println("Depois de remover " + auxHasValue.size());
+				
+				
+				System.out.println("AQUI ainda é null");
+				
+			} else {
+			
+				readingKDM.getAllHasValues().add(aux);
+				
+			} 
+
+			
+		}
 		
 		System.err.println("Size HT: " + readingKDM.getAllHasType().size());
 		

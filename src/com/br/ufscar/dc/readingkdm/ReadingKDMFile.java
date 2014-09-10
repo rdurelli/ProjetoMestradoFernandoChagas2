@@ -599,7 +599,20 @@ public class ReadingKDMFile {
 				
 				if (to instanceof ClassUnit) {
 					
-					//TODO
+					ClassUnit classUnitTO = (ClassUnit) to;
+					
+					List<MethodUnit> allMethods = this.getMethods(classUnitTO);
+					
+					for (MethodUnit methodUnit : allMethods) {
+						
+						if (methodUnit.getName().equals(hasValue.getFrom().getName())) {
+							
+							hasValue.setTo(methodUnit);
+							return hasValue;
+							
+						}
+						
+					}
 					
 				} else if (to instanceof InterfaceUnit) {
 					
@@ -623,6 +636,8 @@ public class ReadingKDMFile {
 				}
 				
 				if (i == (relations.size()-1)) {
+					
+					System.out.println("Chegou no ultimo");
 					
 					return null;
 					
@@ -684,9 +699,9 @@ public class ReadingKDMFile {
 	 * @return HasValue equivalente a uma annotation
 	 */
 	
-	public HasValue fetchAnnotation (MethodUnit auxMethodUnit) {
+	public HasValue fetchAnnotation (CodeItem codeItem) {
 		
-		EList<AbstractCodeRelationship> abstractCodeRelationships = auxMethodUnit.getCodeRelation();
+		EList<AbstractCodeRelationship> abstractCodeRelationships = codeItem.getCodeRelation();
 		
 		if (abstractCodeRelationships.size() > 0){
 		
@@ -694,7 +709,7 @@ public class ReadingKDMFile {
 				
 				HasValue hasValue = (HasValue) abstractCodeRelationships.get(0);
 				
-				if (hasValue.getAnnotation() != null) {
+				if (hasValue.getAnnotation().size() > 0) {
 					return hasValue;
 				}
 				
