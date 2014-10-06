@@ -44,6 +44,8 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 
 	private void executeArchitetureMapping (String kdmFilePath, Segment segment) {
 		
+		
+		
 		String kdmProjectPath = "";
 		
 		ArrayList<HasValue> auxHasValue = new ArrayList<HasValue>();
@@ -56,7 +58,9 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		kdmProjectPath = this.file.getProject().getLocation().toString();
 		
-		ReadingKDMFile readingKDM = new ReadingKDMFile();				
+		ReadingKDMFile readingKDM = new ReadingKDMFile();			
+		
+		/*
 		
 		segment = readingKDM.load(kdmFilePath);
 		
@@ -188,6 +192,9 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		
 		readingKDM.save(segment, "file:"+kdmProjectPath+"/Examples/newKDM.xmi");
+		*/
+		
+		readingKDM.compareRelations("file:/"+kdmProjectPath+"/Examples/newKDM.xmi", "file:/"+kdmProjectPath+"/Examples/planned.xmi");
 		
 	}
 	

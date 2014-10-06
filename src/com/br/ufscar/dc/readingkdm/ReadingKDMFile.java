@@ -3,6 +3,7 @@ package com.br.ufscar.dc.readingkdm;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -144,7 +145,7 @@ public class ReadingKDMFile {
 		
 	}
 	
-	public void compare (List<AggregatedRelationship> allAggregatedRelationShipASIS, List<AggregatedRelationship> allAggregatedRelationShipTOBE) {
+	public void getCorrespondentAggregatedRelationship (List<AggregatedRelationship> allAggregatedRelationShipASIS, List<AggregatedRelationship> allAggregatedRelationShipTOBE) {
 		
 		KDMEntity fromASIS = null;
 		KDMEntity toASIS = null;
@@ -156,13 +157,66 @@ public class ReadingKDMFile {
 			
 			for (AggregatedRelationship aggregatedRelationshipTOBE : allAggregatedRelationShipTOBE) {
 				
-				
+				if (fromASIS.getName().equals(aggregatedRelationshipTOBE.getFrom().getName()) && toASIS.getName().equals(aggregatedRelationshipTOBE.getTo().getName())) {
+					
+					compare(aggregatedRelationshipASIS, aggregatedRelationshipTOBE);
+					
+				}
 				
 			}
 			
 		}
 		
 	}
+	
+	/*
+	 * Este metodo recebe dois AggregatedRelationships equivalentes e compara-os.
+	 */
+	
+	public void compare (AggregatedRelationship aggregatedRelationshipASIS, AggregatedRelationship aggregatedRelationshipTOBE) {
+		
+		List<KDMRelationship> relationsASIS = aggregatedRelationshipASIS.getRelation();
+		List<KDMRelationship> relationsTOBE = aggregatedRelationshipTOBE.getRelation();
+		
+		String nameRelationTOBE = null;
+		String nameRelationASIS = null;
+		
+		boolean checked = false;
+		
+		for (KDMRelationship relationASIS : relationsASIS) {
+			
+			nameRelationASIS = relationASIS.getClass().getName();			
+			System.out.println("relationASIS: " + nameRelationASIS);
+			
+			for (int i = 0; i < relationsTOBE.size(); i++) {
+				
+				nameRelationTOBE = relationsTOBE.get(i).getClass().getName();
+				
+				//verifica se existe algum relation do tipo solicitado
+				if (nameRelationASIS.equals(nameRelationTOBE)) {
+					
+					checked = true;
+					break;
+					
+				}
+				
+				if (i == (relationsTOBE.size()-1) && checked == false) {
+					//cria a nova instância
+					System.err.println("Não encontrado");
+				}
+				
+				
+			}
+						
+		}
+		
+		
+		
+	}
+	
+	
+	
+	
 	
 	public void addAllAggregatedRelationShip (EList<AbstractStructureElement> abstractStructureElement, List<AggregatedRelationship> listToAdd ) {
 		
