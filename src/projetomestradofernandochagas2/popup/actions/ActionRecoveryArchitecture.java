@@ -194,7 +194,7 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		readingKDM.save(segment, "file:"+kdmProjectPath+"/Examples/newKDM.xmi");
 		*/
 		
-		readingKDM.compareRelations("file:/"+kdmProjectPath+"/Examples/newKDM.xmi", "file:/"+kdmProjectPath+"/Examples/planned.xmi");
+		readingKDM.compareRelations("file:"+kdmProjectPath+"/Examples/newKDM.xmi", "file:"+kdmProjectPath+"/Examples/planned.xmi");
 		
 	}
 	

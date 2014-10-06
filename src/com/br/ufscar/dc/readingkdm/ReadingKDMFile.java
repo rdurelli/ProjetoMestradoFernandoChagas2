@@ -47,6 +47,7 @@ import org.eclipse.gmt.modisco.omg.kdm.core.CoreFactory;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KDMModel;
+import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmFactory;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.KdmPackage;
 import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
 import org.eclipse.gmt.modisco.omg.kdm.source.SourceFile;
@@ -92,6 +93,8 @@ public class ReadingKDMFile {
 	
 	private ArrayList<HasValue> allHasValues = new ArrayList<HasValue>();
 	
+	private Segment targetArchitecture = null;
+	
 	/** 
 	 * Retorna um segmento passando como parametro o caminho completo de um arquivo KDM.
 	 * 
@@ -120,12 +123,34 @@ public class ReadingKDMFile {
 	
 	
 	
+	public void createBasicTargetArchitecture (EList<AbstractStructureElement> abstractStructureElementASIS) {
+		
+		this.targetArchitecture = createSegment();
+		createStructureModel(this.targetArchitecture);
+	
+		StructureModel structureModel = (StructureModel) this.targetArchitecture.getModel().get(0);
+			
+		structureModel.getStructureElement().addAll(abstractStructureElementASIS);		
+		EList<AbstractStructureElement> allAbstractElements  = structureModel.getStructureElement();
+		
+		for (AbstractStructureElement abstractStructureElement : allAbstractElements) {
+		
+			abstractStructureElement.getAggregated().clear();
+			
+		}
+		
+	}
 	
 	public void compareRelations (String ArchitecturePathASIS, String ArchitecturePathTOBE) {
 		
 		
+		System.out.println("Chamou");
+		
 		Segment architectureASIS = this.load(ArchitecturePathASIS);
 		Segment architectureTOBE = this.load(ArchitecturePathTOBE);
+		
+		System.out.println(architectureASIS);
+		System.out.println(architectureTOBE);
 		
 		List<AggregatedRelationship> allAggregatedRelationShipASIS = new ArrayList<AggregatedRelationship>();
 		
@@ -136,12 +161,17 @@ public class ReadingKDMFile {
 		StructureModel structureModelTOBE = this.getStructureModelPassingSegment(architectureTOBE);
 		
 		EList<AbstractStructureElement> abstractStructureElementASIS = structureModelASIS.getStructureElement();
+		//move to a method
+		
+		this.createBasicTargetArchitecture(abstractStructureElementASIS);
+
 		
 		EList<AbstractStructureElement> abstractStructureElementTOBE = structureModelTOBE.getStructureElement();
 		
 		this.addAllAggregatedRelationShip(abstractStructureElementASIS, allAggregatedRelationShipASIS);
 		this.addAllAggregatedRelationShip(abstractStructureElementTOBE, allAggregatedRelationShipTOBE);
 		
+		this.getCorrespondentAggregatedRelationship(allAggregatedRelationShipASIS, allAggregatedRelationShipTOBE);
 		
 	}
 	
@@ -181,12 +211,14 @@ public class ReadingKDMFile {
 		String nameRelationTOBE = null;
 		String nameRelationASIS = null;
 		
-		boolean checked = false;
+		Boolean checked = null;
 		
 		for (KDMRelationship relationASIS : relationsASIS) {
 			
+			checked = false;
+			
 			nameRelationASIS = relationASIS.getClass().getName();			
-			System.out.println("relationASIS: " + nameRelationASIS);
+			
 			
 			for (int i = 0; i < relationsTOBE.size(); i++) {
 				
@@ -194,7 +226,7 @@ public class ReadingKDMFile {
 				
 				//verifica se existe algum relation do tipo solicitado
 				if (nameRelationASIS.equals(nameRelationTOBE)) {
-					
+					System.out.println("Encontrou " + nameRelationTOBE);
 					checked = true;
 					break;
 					
@@ -203,6 +235,7 @@ public class ReadingKDMFile {
 				if (i == (relationsTOBE.size()-1) && checked == false) {
 					//cria a nova instância
 					System.err.println("Não encontrado");
+					
 				}
 				
 				
@@ -412,6 +445,24 @@ public class ReadingKDMFile {
 		
 		
 		
+	}
+	
+	private static Segment createSegment() {
+		KdmFactory kdmFactory = KdmPackage.eINSTANCE.getKdmFactory();
+
+		Segment createSegment = kdmFactory.createSegment();
+		createSegment.setName("TargetArchitecture");
+
+		return createSegment;
+	}
+	
+	private static StructureModel createStructureModel (Segment segment) {
+		
+		StructureModel structureModel = StructureFactory.eINSTANCE
+				.createStructureModel();// create a StructureModel
+		segment.getModel().add(structureModel);
+		
+		return structureModel;
 	}
 	
 
