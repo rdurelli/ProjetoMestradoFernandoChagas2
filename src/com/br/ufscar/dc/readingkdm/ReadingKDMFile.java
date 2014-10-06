@@ -53,6 +53,7 @@ import org.eclipse.gmt.modisco.omg.kdm.source.SourceRef;
 import org.eclipse.gmt.modisco.omg.kdm.source.SourceRegion;
 import org.eclipse.gmt.modisco.omg.kdm.structure.AbstractStructureElement;
 import org.eclipse.gmt.modisco.omg.kdm.structure.Layer;
+import org.eclipse.gmt.modisco.omg.kdm.structure.StructureElement;
 import org.eclipse.gmt.modisco.omg.kdm.structure.StructureFactory;
 import org.eclipse.gmt.modisco.omg.kdm.structure.StructureModel;
 
@@ -117,6 +118,87 @@ public class ReadingKDMFile {
 	}
 	
 	
+	
+	
+	public void compareRelations (String ArchitecturePathASIS, String ArchitecturePathTOBE) {
+		
+		
+		Segment architectureASIS = this.load(ArchitecturePathASIS);
+		Segment architectureTOBE = this.load(ArchitecturePathTOBE);
+		
+		List<AggregatedRelationship> allAggregatedRelationShipASIS = new ArrayList<AggregatedRelationship>();
+		
+		List<AggregatedRelationship> allAggregatedRelationShipTOBE = new ArrayList<AggregatedRelationship>();
+		
+		StructureModel structureModelASIS = this.getStructureModelPassingSegment(architectureASIS);
+		
+		StructureModel structureModelTOBE = this.getStructureModelPassingSegment(architectureTOBE);
+		
+		EList<AbstractStructureElement> abstractStructureElementASIS = structureModelASIS.getStructureElement();
+		
+		EList<AbstractStructureElement> abstractStructureElementTOBE = structureModelTOBE.getStructureElement();
+		
+		this.addAllAggregatedRelationShip(abstractStructureElementASIS, allAggregatedRelationShipASIS);
+		this.addAllAggregatedRelationShip(abstractStructureElementTOBE, allAggregatedRelationShipTOBE);
+		
+		
+	}
+	
+	public void compare (List<AggregatedRelationship> allAggregatedRelationShipASIS, List<AggregatedRelationship> allAggregatedRelationShipTOBE) {
+		
+		KDMEntity fromASIS = null;
+		KDMEntity toASIS = null;
+		
+		for (AggregatedRelationship aggregatedRelationshipASIS : allAggregatedRelationShipASIS) {
+			
+			fromASIS = aggregatedRelationshipASIS.getFrom();
+			toASIS = aggregatedRelationshipASIS.getTo();
+			
+			for (AggregatedRelationship aggregatedRelationshipTOBE : allAggregatedRelationShipTOBE) {
+				
+				
+				
+			}
+			
+		}
+		
+	}
+	
+	public void addAllAggregatedRelationShip (EList<AbstractStructureElement> abstractStructureElement, List<AggregatedRelationship> listToAdd ) {
+		
+		for (AbstractStructureElement abstractStructur : abstractStructureElement) {
+			
+			listToAdd.addAll(this.getAllAggregatedRelationShip(abstractStructur));
+			
+		}
+		
+	}
+	
+	public EList<AggregatedRelationship> getAllAggregatedRelationShip (AbstractStructureElement element) {
+		
+		
+		return element.getAggregated();
+		
+	}
+	
+	public StructureModel getStructureModelPassingSegment (Segment segment) {
+		
+		StructureModel structureModel = null;
+		
+		
+		EList<KDMModel> kdmModelASIS = segment.getModel();
+		
+		for (KDMModel kdmModel : kdmModelASIS) {
+			if (kdmModel instanceof StructureModel) {
+				
+				structureModel = (StructureModel)kdmModel;
+				
+			}
+		}
+
+		return structureModel;
+		
+	}
 	
 	public ArrayList<StorableUnit> fetchAllStorableUnitFromClassUnit (ClassUnit classUnitToGetTheStorableUnits) {
 		
