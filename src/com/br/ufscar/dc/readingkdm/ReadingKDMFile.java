@@ -1682,6 +1682,11 @@ public class ReadingKDMFile {
 
 	public void setAllHasValues(ArrayList<HasValue> allHasValues) {
 		this.allHasValues = allHasValues;
-	}		
+	}
+	
+	public Segment getTargetArchitecture() {
+		return targetArchitecture;
+	}
+	
 	
 }

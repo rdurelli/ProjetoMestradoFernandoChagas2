@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import com.br.ufscar.dc.readingkdm.ReadingKDMFile;
 
@@ -34,6 +36,8 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 	private Shell shell;
 
 	private IFile file;
+	
+	public static Segment plannedSegment;
 	
 	/**
 	 * Constructor for ActionRecoveryArchitecture.
@@ -196,6 +200,16 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		
 		readingKDM.compareRelations("file:"+kdmProjectPath+"/Examples/newKDM.xmi", "file:"+kdmProjectPath+"/Examples/planned.xmi");
 		
+		readingKDM.save(readingKDM.getTargetArchitecture(), "file:"+kdmProjectPath+"/Examples/TARGET_KDM.xmi");
+		
+		ActionRecoveryArchitecture.plannedSegment = readingKDM.load("file:"+kdmProjectPath+"/Examples/planned.xmi");
+		
+		try {
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("com.br.ufscar.dc.ui.DCLView");
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**

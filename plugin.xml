@@ -26,5 +26,13 @@
          </action>
       </objectContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="com.br.ufscar.dc.ui.DCLView"
+            id="com.br.ufscar.dc.ui.DCLView"
+            name="DCL Vie">
+      </view>
+   </extension>
 
 </plugin>
