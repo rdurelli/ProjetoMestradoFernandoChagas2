@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.relation.Relation;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -236,6 +238,8 @@ public class ReadingKDMFile {
 					//cria a nova instância
 					System.err.println("Não encontrado");
 					
+					this.searchStructureElement(aggregatedRelationshipASIS, relationASIS);
+					
 				}
 				
 				
@@ -243,6 +247,65 @@ public class ReadingKDMFile {
 						
 		}
 		
+		
+		
+	}
+	
+	private void searchStructureElement (AggregatedRelationship aggregatedRelationship,  KDMRelationship relationToAdd) {
+		
+		StructureElement fromASIS = (StructureElement) aggregatedRelationship.getFrom();
+		StructureElement toASIS = (StructureElement) aggregatedRelationship.getTo();
+		
+		AbstractStructureElement targetElementFROM = null;
+		AbstractStructureElement targetElementTO = null;
+		
+		//TODO
+		EList<AbstractStructureElement> allElementsFromTarget = getAllStructureElements(this.targetArchitecture);
+		
+		for (AbstractStructureElement targetElement : allElementsFromTarget) {
+			
+			if (fromASIS.getName().equals(targetElement.getName())) {
+				targetElementFROM = targetElement;				
+			}
+			
+			if (toASIS.getName().equals(targetElement.getName())) {
+				targetElementTO = targetElement;
+			}
+			
+		}
+		
+		if (targetElementFROM.getAggregated().size() > 0) {
+			//TODO
+			System.out.println("MAIOR QUE 1, TODO");
+		} else {
+			AggregatedRelationship newRelationship = CoreFactory.eINSTANCE.createAggregatedRelationship();
+			newRelationship.setDensity(1);
+			newRelationship.setFrom(targetElementFROM);
+			newRelationship.setTo(targetElementTO);
+			newRelationship.getRelation().add(relationToAdd);
+			targetElementFROM.getAggregated().add(newRelationship);
+		}
+		
+		
+		
+	}
+	
+	private EList<AbstractStructureElement> getAllStructureElements (Segment segment) {
+		
+		EList<KDMModel> models = segment.getModel();
+		
+		StructureModel structureModel = null;
+		
+		for (KDMModel kdmModel : models) {
+			
+			if (kdmModel instanceof StructureModel) {
+				 
+				structureModel = (StructureModel) kdmModel;
+			}
+			
+		}
+		
+		return structureModel.getStructureElement();
 		
 		
 	}
