@@ -1,7 +1,10 @@
 package com.br.ufscar.dc.readingkdm;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +18,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.gmt.modisco.omg.kdm.action.AbstractActionRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.action.ActionElement;
@@ -132,7 +136,11 @@ public class ReadingKDMFile {
 	
 		StructureModel structureModel = (StructureModel) this.targetArchitecture.getModel().get(0);
 			
-		structureModel.getStructureElement().addAll(abstractStructureElementASIS);		
+//		Collections.copy(structureModel.getStructureElement(), abstractStructureElementASIS);
+		
+		Collection copyAllAbstractStructureElementASIS = EcoreUtil.copyAll(abstractStructureElementASIS);
+			
+		structureModel.getStructureElement().addAll(copyAllAbstractStructureElementASIS);		
 		EList<AbstractStructureElement> allAbstractElements  = structureModel.getStructureElement();
 		
 		for (AbstractStructureElement abstractStructureElement : allAbstractElements) {
@@ -253,8 +261,8 @@ public class ReadingKDMFile {
 	
 	private void searchStructureElement (AggregatedRelationship aggregatedRelationship,  KDMRelationship relationToAdd) {
 		
-		StructureElement fromASIS = (StructureElement) aggregatedRelationship.getFrom();
-		StructureElement toASIS = (StructureElement) aggregatedRelationship.getTo();
+		AbstractStructureElement fromASIS = (AbstractStructureElement) aggregatedRelationship.getFrom();
+		AbstractStructureElement toASIS = (AbstractStructureElement) aggregatedRelationship.getTo();
 		
 		AbstractStructureElement targetElementFROM = null;
 		AbstractStructureElement targetElementTO = null;
