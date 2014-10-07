@@ -42,6 +42,14 @@ public class DCLView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
+		
+		// Graph will hold all other objects
+		graph = new Graph(container, SWT.NONE);
+		graph.setBounds(0, 0, 1050, 435);
+		// Now a few nodes
+		
+		graph.setLayoutAlgorithm(new TreeLayoutAlgorithm(
+				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 
 		createActions();
 		initializeToolBar();
@@ -54,13 +62,6 @@ public class DCLView extends ViewPart {
 	private void draw (Composite parent) {
 		
 		StructureModel structureModelToDraw  = (StructureModel) ActionRecoveryArchitecture.plannedSegment.getModel().get(3);
-		
-		// Graph will hold all other objects
-		graph = new Graph(parent, SWT.NONE);
-		// Now a few nodes
-		
-		graph.setLayoutAlgorithm(new TreeLayoutAlgorithm(
-				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 		
 		EList<AbstractStructureElement> allElements = structureModelToDraw.getStructureElement();
 		

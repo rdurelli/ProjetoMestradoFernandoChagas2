@@ -31,7 +31,7 @@
       <view
             class="com.br.ufscar.dc.ui.DCLView"
             id="com.br.ufscar.dc.ui.DCLView"
-            name="DCL Vie">
+            name="DCL View">
       </view>
    </extension>
 
