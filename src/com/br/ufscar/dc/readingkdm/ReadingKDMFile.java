@@ -285,6 +285,39 @@ public class ReadingKDMFile {
 		if (targetElementFROM.getAggregated().size() > 0) {
 			//TODO
 			System.out.println("MAIOR QUE 1, TODO");
+			
+			EList<AggregatedRelationship> aggregatedFROM = targetElementFROM.getAggregated();		
+			
+			
+			for (int i = 0; i < aggregatedFROM.size(); i++) {
+				
+				if (toASIS.getName().equals(aggregatedFROM.get(i).getTo().getName())) {
+					
+					//ADICIONAR
+					
+					aggregatedFROM.get(i).setDensity(aggregatedFROM.get(i).getDensity()+1);
+					aggregatedFROM.get(i).getRelation().add(relationToAdd);
+					
+					break;
+				}
+				
+				//se chegar no último e não encontrar
+				if (i == (aggregatedFROM.size()-1)) {
+					
+					AggregatedRelationship newRelationship = CoreFactory.eINSTANCE.createAggregatedRelationship();
+					newRelationship.setDensity(1);
+					newRelationship.setFrom(targetElementFROM);
+					newRelationship.setTo(targetElementTO);
+					newRelationship.getRelation().add(relationToAdd);
+					targetElementFROM.getAggregated().add(newRelationship);
+					
+				}
+				
+				
+			}
+			
+			
+			
 		} else {
 			AggregatedRelationship newRelationship = CoreFactory.eINSTANCE.createAggregatedRelationship();
 			newRelationship.setDensity(1);
