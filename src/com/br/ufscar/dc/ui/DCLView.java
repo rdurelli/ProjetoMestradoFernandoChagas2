@@ -7,6 +7,7 @@ import org.eclipse.draw2d.Label;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gmt.modisco.omg.kdm.core.AggregatedRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
+import org.eclipse.gmt.modisco.omg.kdm.core.KDMRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.structure.AbstractStructureElement;
 import org.eclipse.gmt.modisco.omg.kdm.structure.StructureModel;
 import org.eclipse.jface.action.IMenuManager;
@@ -16,6 +17,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -52,6 +54,12 @@ public class DCLView extends ViewPart {
 	
 	private int layout = 1;
 	
+	private ArrayList<GraphNode> allNodes = new ArrayList<GraphNode>();
+	
+	private EList<AbstractStructureElement> allElements = null;
+	
+	private ArrayList<AggregatedRelationship> allAggregatedRelationships = new ArrayList<AggregatedRelationship>();
+	
 	public DCLView() {
 	}
 	
@@ -76,7 +84,7 @@ public class DCLView extends ViewPart {
 				
 				System.out.println(graph.getSelection());
 				
-				createContainer2(graph);
+				createContainer2(graph, (GraphConnection) graph.getSelection().get(0));
 				
 			}
 		});
@@ -100,31 +108,31 @@ public class DCLView extends ViewPart {
 		
 		StructureModel structureModelToDraw  = (StructureModel) ActionRecoveryArchitecture.plannedSegment.getModel().get(3);
 		
-		EList<AbstractStructureElement> allElements = structureModelToDraw.getStructureElement();
+		this.allElements = structureModelToDraw.getStructureElement();
 		
-		ArrayList<GraphNode> allNodes = new ArrayList<GraphNode>();
+		this.allNodes = new ArrayList<GraphNode>();
 		
-		for (AbstractStructureElement abstractStructureElement : allElements) {
+		for (AbstractStructureElement abstractStructureElement : this.allElements) {
 		
 			GraphNode node = new GraphNode(graph, SWT.NONE, abstractStructureElement.getName());
 			
-			allNodes.add(node);
+			this.allNodes.add(node);
 			
 		}
 		
-		ArrayList<AggregatedRelationship> allRelations = new ArrayList<AggregatedRelationship>();
+		this.allAggregatedRelationships = new ArrayList<AggregatedRelationship>();
 		
-		for (AbstractStructureElement abstractStructureElement : allElements) {
+		for (AbstractStructureElement abstractStructureElement : this.allElements) {
 			
 			if (abstractStructureElement.getAggregated().size() > 0) {
 				
-				allRelations.addAll(abstractStructureElement.getAggregated());
+				this.allAggregatedRelationships.addAll(abstractStructureElement.getAggregated());
 				
 			}
 			
 		}
 		
-		for (AggregatedRelationship aggregatedRelationship : allRelations) {
+		for (AggregatedRelationship aggregatedRelationship : this.allAggregatedRelationships) {
 		
 			KDMEntity from = aggregatedRelationship.getFrom();
 			KDMEntity to = aggregatedRelationship.getTo();
@@ -133,7 +141,7 @@ public class DCLView extends ViewPart {
 			
 			GraphNode nodeTO = null;
 			
-			for (GraphNode node : allNodes) {
+			for (GraphNode node : this.allNodes) {
 				
 				if (node.getText().equals(from.getName())) {
 					
@@ -239,19 +247,65 @@ public class DCLView extends ViewPart {
 	}
 
 	
-	public static void createContainer2 (Graph graph) {
+	public void createContainer2 (Graph graph, GraphConnection connection) {
 		
-		GraphContainer graphContainer = new GraphContainer(graph, SWT.NONE, "AggregatedRealationShip");
+		String destination = connection.getDestination().getText();
+		String source = connection.getSource().getText();
 		
-		GraphNode a1 = new GraphNode(graphContainer, ZestStyles.NODES_FISHEYE | ZestStyles.NODES_HIDE_TEXT, "Extends");
-		GraphNode a2 = new GraphNode(graphContainer, ZestStyles.NODES_FISHEYE | ZestStyles.NODES_HIDE_TEXT, "Calls");
-		GraphNode a3 = new GraphNode(graphContainer, ZestStyles.NODES_FISHEYE | ZestStyles.NODES_HIDE_TEXT, "Implements");
-		GraphNode a4 = new GraphNode(graphContainer, ZestStyles.NODES_FISHEYE | ZestStyles.NODES_HIDE_TEXT, "Imports");
-	
+		GraphContainer graphContainer = new GraphContainer(graph, SWT.NONE, "AR for " + source + " to " + destination);
 		
+		AggregatedRelationship selected = null;
+		
+		for (AggregatedRelationship aggregatedRelationship : this.allAggregatedRelationships) {
+			
+			KDMEntity from = aggregatedRelationship.getFrom();
+			KDMEntity to = aggregatedRelationship.getTo();
+			
+			if (from.getName().equals(source) && to.getName().equals(destination)) {
+				selected = aggregatedRelationship;
+				break;
+			}
+		
+		}
+		
+		GraphNode node;
+		
+		EList<KDMRelationship> relationsToAdd = selected.getRelation();
+		
+		for (KDMRelationship relation : relationsToAdd) {
+			
+			String [] nameCorrected = relation.getClass().getName().split("\\.");
+			String nameCorrected2 = nameCorrected[nameCorrected.length-1];
+			nameCorrected2 = nameCorrected2.substring(0, nameCorrected2.length()-4);
+			
+			node = new GraphNode(graphContainer, ZestStyles.NODES_NO_ANIMATION, nameCorrected2);
+			node.setBackgroundColor(chooseColor(nameCorrected2));
+		}
 		
 		graphContainer.setLayoutAlgorithm(new RadialLayoutAlgorithm(LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
 	}
+	
+	private Color chooseColor (String relation) {
+		
+		if (relation.equals("Calls")) {
+			return new org.eclipse.swt.graphics.Color(Display.getCurrent(), 0, 128, 0);
+		} else if (relation.equals("Imports")) {
+			return new org.eclipse.swt.graphics.Color(Display.getCurrent(), 128, 128, 128);
+		} else if (relation.equals("Implements")) {
+			return new org.eclipse.swt.graphics.Color(Display.getCurrent(), 0, 128, 128);
+		} else if (relation.equals("HasType")) {
+			return new org.eclipse.swt.graphics.Color(Display.getCurrent(), 192, 192, 192);
+		} else if (relation.equals("HasValue")) {
+			return new org.eclipse.swt.graphics.Color(Display.getCurrent(), 128, 0, 0);
+		} else if (relation.equals("UsesType")) {
+			return new org.eclipse.swt.graphics.Color(Display.getCurrent(), 128, 128, 0);
+		} else {
+			return new org.eclipse.swt.graphics.Color(Display.getCurrent(), 15, 39, 40);
+		}
+		
+	}
+	
+	
 	
 	
 	/**
