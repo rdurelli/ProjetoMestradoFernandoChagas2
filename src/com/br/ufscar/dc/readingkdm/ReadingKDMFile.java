@@ -686,6 +686,17 @@ public class ReadingKDMFile {
 		}
 		return packages;
 	}
+	
+	/** 
+	 * Esse metodo e responsavel por obter todas as classes e interfaces a partir de um pacote
+	 * @param auxPackage, o pacote que possui as claasses e interfaces
+	 * @return EList<KDMEntity> todas as Classes e Interfaces de um pacote
+	 */
+	
+	public EList<AbstractCodeElement> getClassesAndInterfacesByPackage (Package auxPackage) {
+		EList<AbstractCodeElement> allClassesAndInterfaces = auxPackage.getCodeElement();
+		return allClassesAndInterfaces;
+	}
 
 	
 	/** 
@@ -1411,16 +1422,18 @@ public class ReadingKDMFile {
 		if (packageToGetThePath instanceof Package) {
 
 			Package packageToGet = (Package) packageToGetThePath;
+			
+			pathToGet = getPathOfPackage(
+					(EObject) packageToGetThePath.eContainer(), pathToGet);
 
 			if (packageToGetThePath.eContainer() instanceof CodeModel) {
 				pathToGet += packageToGet.getName();
 			} else {
 
-				pathToGet += packageToGet.getName() + ".";
+				pathToGet += "." + packageToGet.getName() ;
 
 			}
-			pathToGet = getPathOfPackage(
-					(EObject) packageToGetThePath.eContainer(), pathToGet);
+			
 		} else
 			return pathToGet;
 

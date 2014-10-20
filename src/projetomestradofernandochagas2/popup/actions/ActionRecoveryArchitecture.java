@@ -29,6 +29,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import com.br.ufscar.dc.readingkdm.ReadingKDMFile;
+import com.br.ufscar.dc.ui.MappingArchitectureElements;
 
 
 public class ActionRecoveryArchitecture implements IObjectActionDelegate {
@@ -38,6 +39,7 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 	private IFile file;
 	
 	public static Segment plannedSegment;
+	public static String kdmProjectPath = "";
 	
 	/**
 	 * Constructor for ActionRecoveryArchitecture.
@@ -46,11 +48,7 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		super();
 	}
 
-	private void executeArchitetureMapping (String kdmFilePath, Segment segment) {
-		
-		
-		
-		String kdmProjectPath = "";
+	private void executeArchitetureMapping (String kdmFilePath, Segment segment) {								
 		
 		ArrayList<HasValue> auxHasValue = new ArrayList<HasValue>();
 		
@@ -201,6 +199,9 @@ public class ActionRecoveryArchitecture implements IObjectActionDelegate {
 		readingKDM.compareRelations("file:"+kdmProjectPath+"/Examples/newKDM.xmi", "file:"+kdmProjectPath+"/Examples/planned.xmi");
 		
 		readingKDM.save(readingKDM.getTargetArchitecture(), "file:"+kdmProjectPath+"/Examples/TARGET_KDM.xmi");
+		
+		MappingArchitectureElements mappingArchitectureElements = new MappingArchitectureElements();
+		mappingArchitectureElements.open();
 		
 		ActionRecoveryArchitecture.plannedSegment = readingKDM.load("file:"+kdmProjectPath+"/Examples/planned.xmi");
 		

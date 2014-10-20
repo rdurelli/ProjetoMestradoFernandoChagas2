@@ -1,5 +1,16 @@
 package com.br.ufscar.dc.ui;
 
+import java.util.ArrayList;
+
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeElement;
+import org.eclipse.gmt.modisco.omg.kdm.code.CodeModel;
+import org.eclipse.gmt.modisco.omg.kdm.code.Package;
+import org.eclipse.gmt.modisco.omg.kdm.core.KDMEntity;
+import org.eclipse.gmt.modisco.omg.kdm.kdm.Segment;
+import org.eclipse.gmt.modisco.omg.kdm.structure.AbstractStructureElement;
+import org.eclipse.gmt.modisco.omg.kdm.structure.StructureElement;
+import org.eclipse.gmt.modisco.omg.kdm.structure.StructureModel;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
@@ -11,24 +22,22 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.SWTResourceManager;
+
+import com.br.ufscar.dc.readingkdm.ReadingKDMFile;
+
+import projetomestradofernandochagas2.popup.actions.ActionRecoveryArchitecture;
 
 public class MappingArchitectureElements {
 
 	protected Shell shlMappingArchitectureElements;
-
-	/**
-	 * Launch the application.
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			MappingArchitectureElements window = new MappingArchitectureElements();
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
+	private ReadingKDMFile readingKDMFile = new ReadingKDMFile();
+	
+	private Segment TOBE;
+	
+	private Segment ASIS;
 
 	/**
 	 * Open the window.
@@ -49,6 +58,16 @@ public class MappingArchitectureElements {
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
+		this.TOBE = this.readingKDMFile.load("file:C:/Users/Fernando/Documents/workspace/ProjetoMestradoFernandoChagas2/src/planned.xmi");
+		this.ASIS = this.readingKDMFile.load("file:C:/Users/Fernando/Documents/workspace/ProjetoMestradoFernandoChagas2/src/newKDM.xmi");
+		
+		StructureModel structureModelTOBE = readingKDMFile.getStructureModelPassingSegment(this.TOBE);
+		EList<AbstractStructureElement> structureElementsTOBE = structureModelTOBE.getStructureElement();
+		
+		ArrayList<Package> allPackagesTOBE = readingKDMFile.getAllPackages(this.TOBE);
+		ArrayList<Package> allPackagesASIS = readingKDMFile.getAllPackages(this.ASIS);
+		
+		
 		shlMappingArchitectureElements = new Shell();
 		shlMappingArchitectureElements.setSize(657, 456);
 		shlMappingArchitectureElements.setText("Mapping Architecture Elements");
@@ -60,7 +79,11 @@ public class MappingArchitectureElements {
 		
 		List list = new List(shlMappingArchitectureElements, SWT.BORDER);
 		list.setFont(SWTResourceManager.getFont("Lucida Grande", 12, SWT.NORMAL));
-		list.setItems(new String[] {"layer - model", "layer - controller", "layer - view"});
+		for (AbstractStructureElement element : structureElementsTOBE) {
+			list.add(element.getName());
+		}		
+		
+		//list.setItems(new String[] {"layer - model", "layer - controller", "layer - view"});
 		list.setBounds(10, 37, 294, 198);
 		
 		List list_1 = new List(shlMappingArchitectureElements, SWT.BORDER);
@@ -77,26 +100,26 @@ public class MappingArchitectureElements {
 		tree.setFont(SWTResourceManager.getFont("Lucida Grande", 12, SWT.NORMAL));
 		tree.setBounds(329, 37, 306, 197);
 		
-		TreeItem treeItem0 = new TreeItem(tree, 0);
-		treeItem0.setText("package - com.br.controller ");
+		Image packageImage = new Image(Display.getDefault(), MappingArchitectureElements.class.getResourceAsStream("package_obj.gif"));
+		Image classImage = new Image(Display.getDefault(), MappingArchitectureElements.class.getResourceAsStream("class_obj.gif"));
 		
-		TreeItem treeItem00 = new TreeItem(treeItem0, 0);
-		treeItem00.setText("class - ProductController.java ");
-	
-		TreeItem treeItem1 = new TreeItem(tree, 0);
-		treeItem1.setText("package - com.br.model ");
-		
-		TreeItem treeItem11 = new TreeItem(treeItem1, 0);
-		treeItem11.setText("class - Product ");
-		
-		TreeItem treeItem12 = new TreeItem(treeItem1, 0);
-		treeItem12.setText("class - Menu ");
-		
-		TreeItem treeItem2 = new TreeItem(tree, 0);
-		treeItem2.setText("package - com.br.view ");
-		
-		TreeItem treeItem21 = new TreeItem(treeItem2, 0);
-		treeItem21.setText("class - MainTest ");
+		String pathToGet = null;
+		TreeItem treeItem0 = null;
+		TreeItem treeItem11 = null;
+		for (Package package1 : allPackagesASIS) {
+			pathToGet = "";
+			pathToGet =  readingKDMFile.getPathOfPackage(package1, pathToGet);
+			treeItem0 = new TreeItem(tree, 0);
+			treeItem0.setImage(packageImage);
+			treeItem0.setText(pathToGet);
+			
+			EList<AbstractCodeElement> allClassesAndInterfaces = readingKDMFile.getClassesAndInterfacesByPackage(package1);
+			for (AbstractCodeElement classOrInterface : allClassesAndInterfaces) {
+				treeItem11 = new TreeItem(treeItem0, 0);
+				treeItem11.setImage(classImage);
+				treeItem11.setText(classOrInterface.getName() + ".java");
+			}
+		}
 		
 		Button btnMap = new Button(shlMappingArchitectureElements, SWT.NONE);
 		btnMap.setFont(SWTResourceManager.getFont("Lucida Grande", 14, SWT.NORMAL));
@@ -119,4 +142,6 @@ public class MappingArchitectureElements {
 		btnDelete.setBounds(541, 397, 94, 28);
 
 	}
+	
+	
 }
