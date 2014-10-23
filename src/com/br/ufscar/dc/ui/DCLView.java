@@ -90,8 +90,6 @@ public class DCLView extends ViewPart {
 		});
 		btnNewButton.setBounds(10, 10, 106, 28);
 		btnNewButton.setText("Show Relations");
-//		this.get
-		// Now a few nodes
 		
 		graph.setLayoutAlgorithm(new TreeLayoutAlgorithm(
 				LayoutStyles.NO_LAYOUT_NODE_RESIZING), true);
