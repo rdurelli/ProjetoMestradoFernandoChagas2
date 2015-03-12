@@ -17,11 +17,32 @@
             </separator>
          </menu>
          <action
+               class="projetomestradofernandochagas2.popup.actions.GettingKDMInstance"
+               enablesFor="1"
+               id="ProjetoMestradoFernandoChagas2.GettingKDMInstance"
+               label="Get KDM Instance"
+               menubarPath="ProjetoMestradoFernandoChagas2.menu1/group1">
+         </action>
+         <action
                class="projetomestradofernandochagas2.popup.actions.ActionRecoveryArchitecture"
                enablesFor="1"
                icon="icons/recovery.png"
                id="ProjetoMestradoFernandoChagas2.newAction"
                label="Recovery ArchitectureView"
+               menubarPath="ProjetoMestradoFernandoChagas2.menu1/group1">
+         </action>
+         <action
+               class="projetomestradofernandochagas2.popup.actions.MapArchitectureElementsToCodeElements"
+               enablesFor="1"
+               id="ProjetoMestradoFernandoChagas2.MapArchitectureElementsToCodeElements"
+               label="Map Architectural Elements"
+               menubarPath="ProjetoMestradoFernandoChagas2.menu1/group1">
+         </action>
+         <action
+               class="projetomestradofernandochagas2.popup.actions.ArchitectureComplianceChecking"
+               enablesFor="1"
+               id="ProjetoMestradoFernandoChagas2.ArchitectureComplianceChecking"
+               label="Architecture Compliance Checking"
                menubarPath="ProjetoMestradoFernandoChagas2.menu1/group1">
          </action>
       </objectContribution>
