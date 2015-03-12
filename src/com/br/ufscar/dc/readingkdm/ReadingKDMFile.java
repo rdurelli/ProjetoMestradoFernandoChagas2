@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.ecore.xml.type.internal.RegEx.REUtil;
 import org.eclipse.gmt.modisco.omg.kdm.action.AbstractActionRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.action.ActionElement;
 import org.eclipse.gmt.modisco.omg.kdm.action.ActionRelationship;
@@ -30,6 +31,7 @@ import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeElement;
 import org.eclipse.gmt.modisco.omg.kdm.code.AbstractCodeRelationship;
 import org.eclipse.gmt.modisco.omg.kdm.code.CallableUnit;
 import org.eclipse.gmt.modisco.omg.kdm.code.ClassUnit;
+import org.eclipse.gmt.modisco.omg.kdm.code.CodeElement;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeFactory;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeItem;
 import org.eclipse.gmt.modisco.omg.kdm.code.CodeModel;
@@ -1700,6 +1702,146 @@ public class ReadingKDMFile {
 	public Segment getTargetArchitecture() {
 		return targetArchitecture;
 	}
+	
+	public ArrayList<CodeItem> getAllAffectedElements (ArrayList<CodeItem> affectedElements, CodeItem target) {
+		
+		CodeItem itemToVerify = (CodeItem) target.eContainer();
+		
+		affectedElements.add(itemToVerify);
+		
+		//verifica se alcançou um pacote
+		if (itemToVerify instanceof Package) {
+			return affectedElements;
+		}
+		else {
+			affectedElements = getAllAffectedElements(affectedElements, itemToVerify);
+		}
+		return affectedElements;
+	}
+	
+	public AbstractStructureElement getAffectedStructureElement (StructureModel structureModel, Package packageTofind) {
+		AbstractStructureElement structureElementFound = null;
+		
+		EList<AbstractStructureElement> structureElements = structureModel.getStructureElement();
+		
+		for (AbstractStructureElement abstractStructureElement : structureElements) {
+			
+			EList<KDMEntity> implementation = abstractStructureElement.getImplementation();
+			
+			for (KDMEntity kdmEntity : implementation) {
+				
+				if (kdmEntity instanceof Package) {
+					Package package1 = (Package) kdmEntity;
+					if (package1.getName().equals(packageTofind.getName())) {
+						structureElementFound = abstractStructureElement;
+						return abstractStructureElement;
+					}
+				}
+				
+			}
+			
+		}
+		
+		return structureElementFound;
+	}
+	
+	public ArrayList<KDMRelationship> getAffectedsRelationships (CodeItem codeItem, AbstractStructureElement structureElement) {
+		ArrayList<KDMRelationship> affectedRelationships = new ArrayList<KDMRelationship>();
+		
+		EList<AggregatedRelationship> aggregatedRelationships = structureElement.getAggregated();
+		
+		for (AggregatedRelationship aggregatedRelationship : aggregatedRelationships) {
+			
+			EList<KDMRelationship> kdmRelationships = aggregatedRelationship.getRelation();
+			
+			for (KDMRelationship kdmRelationship : kdmRelationships) {				
+				boolean result = false;
+				//TODO
+				//função que suba na árvore até encontrar o codeItem
+				if (codeItem instanceof MethodUnit) {
+					result = verifyRelationshipMethod(codeItem, kdmRelationship, result);
+				} else if (codeItem instanceof ClassUnit) {
+					result = verifyRelationshipClass(codeItem, kdmRelationship, result);
+				} else if (codeItem instanceof Package) {
+					result = verifyRelationshipPackage(codeItem, kdmRelationship, result);
+				}
+				if (result) {
+					affectedRelationships.add(kdmRelationship);
+				}				
+			}
+			
+		}
+		
+		return affectedRelationships;
+	}
+	
+	//verifica se um relationship pertence a um determinado codeitem
+	//não garente que o método seja o mesmo, depois devemos subir a árvore para verificar se o elemento encontrado é realmente o mesmo
+	public boolean verifyRelationshipClass (KDMEntity item, EObject elementToVerify, boolean result) {		
+		
+		if (elementToVerify.eContainer() instanceof ClassUnit) {
+			ClassUnit classUnit = (ClassUnit) elementToVerify.eContainer();
+			
+			if(classUnit.getName().equals(item.getName())) {
+				result = true;
+				return result;
+			}
+			else {
+				result = false;
+				return result;
+			}
+		}
+		else {
+			result = verifyRelationshipClass(item, elementToVerify.eContainer(), result);
+		}
+		
+		return result;
+		
+	}
+	
+	public boolean verifyRelationshipPackage (KDMEntity item, EObject elementToVerify, boolean result) {		
+		
+		if (elementToVerify.eContainer() instanceof Package) {
+			Package packageFound = (Package) elementToVerify.eContainer();
+			
+			if(packageFound.getName().equals(item.getName())) {
+				result = true;
+				return result;
+			}
+			else {
+				result = false;
+				return result;
+			}
+		}
+		else {
+			result = verifyRelationshipPackage(item, elementToVerify.eContainer(), result);
+		}
+		
+		return result;
+		
+	}
+	
+	public boolean verifyRelationshipMethod (KDMEntity item, EObject elementToVerify, boolean result) {		
+		
+		if (elementToVerify.eContainer() instanceof MethodUnit) {
+			MethodUnit methodUnit = (MethodUnit) elementToVerify.eContainer();
+			
+			if(methodUnit.getName().equals(item.getName())) {
+				result = true;
+				return result;
+			}
+			else {
+				result = false;
+				return result;
+			}
+		}
+		else {
+			result = verifyRelationshipMethod(item, elementToVerify.eContainer(), result);
+		}
+		
+		return result;	
+	}
+	
 	
 	
 }
